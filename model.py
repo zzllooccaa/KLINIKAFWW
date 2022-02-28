@@ -18,6 +18,10 @@ engine = create_engine(
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 db = SessionLocal()
 Base = declarative_base()
+########################################################
+# alembic revision --autogenerate -m "user_phone_add"  #
+# alembic upgrade head                                 #
+########################################################
 
 
 ##############################

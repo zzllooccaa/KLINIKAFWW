@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, FastAPI, Response
 from model import User, db
 import schemas
+from uuid import uuid4
+from sessions.session_backends import backend as test
 
 import errors
+
+
 
 user_router = APIRouter()
 
@@ -11,8 +15,17 @@ user_router = APIRouter()
 def login(item: schemas.UserLogin):
     user = User.get_user_by_email_and_password(email=item.email, password=item.password)
     if not user:
-        return {"ERROR": "WRONG_CREDENTIALS"}
+        return {"ERROR": errors.WRONG_CREDENTIALS}
 
+    session = uuid4()
+    data = schemas.SessionData(
+        username=user.name,
+        role=user.role,
+        id=user.id
+    )
+    test.create(session, data)
+    print(data)
+    # cookie.attach_to_response(response, session)
     return user
 
 

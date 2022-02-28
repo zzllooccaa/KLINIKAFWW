@@ -172,3 +172,8 @@ class PagePerPage(BaseModel):
     email: Optional[str]
     name: Optional[str]
     surname: Optional[str]
+
+
+class SessionData(UserId):
+    username = str
+    role = str
