@@ -18,6 +18,8 @@ engine = create_engine(
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 db = SessionLocal()
 Base = declarative_base()
+
+
 ########################################################
 # alembic revision --autogenerate -m "user_phone_add"  #
 # alembic upgrade head                                 #
@@ -49,6 +51,10 @@ class BaseModels(object):
     @declared_attr
     def date_of_creation(self):
         return Column(DateTime(), default=datetime.datetime.today())
+
+    @classmethod
+    def get_by_id(cls, id):
+        return db.query(cls).filter(cls.id == id).all()
 
 
 class BaseUser(BaseModels):
@@ -88,9 +94,17 @@ class User(Base, BaseUser):
     password = Column(String, nullable=False)
     role = Column(Enum(Role), default=Role.doctor)  # Enum polje
 
+    ################################
+    # GET USER BY EMAIL & PASSWORD #
+    ################################
+
     @classmethod
     def get_user_by_email_and_password(cls, email, password):
         return db.query(cls).filter(cls.email == email, cls.password == password).first()
+
+    #################################################
+    # GET ALL USER SEARCHED BY EMAIL,NAME & SURNAME #
+    #################################################
 
     @classmethod
     def get_all_user_paginate(cls, email, name, surname):
@@ -103,9 +117,9 @@ class User(Base, BaseUser):
             users = users.filter(cls.surname == surname)
         return users.all()
 
-    ##################################
-    # CHECK USER BY EMAIL , JMBG #
-    ##################################
+    #########################################
+    # CHECK USER BY EMAIL , JMBG & AND ROLE #
+    #########################################
 
     @classmethod
     def check_user_by_email(cls, email):
@@ -116,8 +130,8 @@ class User(Base, BaseUser):
         return db.query(cls).filter(cls.jmbg == jmbg).first()
 
     @classmethod
-    def get_user_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id).first()
+    def check_user_by_role(cls, role):
+        return db.query(cls).filter(cls.role == role).first()
 
     ##################
     # UPDATE METHODS #
@@ -132,7 +146,7 @@ class Customers(Base, BaseUser):
 
     id: int
     email: str
-    date_of_birth = Column(DateTime)  # treba da stavis nullable=false ali vidi sa urosem
+    date_of_birth = Column(DateTime)
     personal_medical_history = Column(Text)
     family_medical_history = Column(Text)
     company_name = Column(Text)
@@ -165,9 +179,13 @@ class Customers(Base, BaseUser):
             customer = customer.filter(cls.surname == surname)
         return customer.all()
 
+    ##########################
+    # CHECK CUSTOMER BY JMBG #
+    ##########################
+
     @classmethod
-    def get_customer_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id).first()
+    def get_customer_by_jmbg(cls, jmbg):
+        return db.query(cls).filter(cls.jmbg == jmbg).all()
 
     #################
     # EDIT CUSTOMER #
@@ -185,20 +203,37 @@ class PriceList(Base, BaseModels):
     medical_service = Column(String)
     price_of_service = Column(Integer)
     time_for_exam = Column(Integer)
+    date_of_end = Column(DateTime)
+
+    ###########################
+    # CHECK PRICE BY SERVICES #
+    ###########################
 
     @classmethod
-    def check_price_list_by_medical_service(cls, medical_service):
-        return db.query(cls).filter(cls.medical_service == medical_service).first()
+    def check_price_list_by_services(cls, services):
+        return db.query(cls).filter(cls.services == services).first()
+
+    ###################
+    # GET ALL PRICE'S #
+    ###################
 
     @classmethod
-    def get_all_price(cls, service, medical_service):
+    def get_all_price(cls, services, medical_service):
         price_list = db.query(cls)
-        if service:
-            price_list = price_list.filter(cls.service == service)
+        if services:
+            price_list = price_list.filter(cls.services == services)
         if medical_service:
             price_list = price_list.filter(cls.medical_service == medical_service)
 
         return price_list.all()
+
+    ##################
+    # EDIT PRICE_LIST #
+    ##################
+
+    @classmethod
+    def edit_price_list(cls, price_list_id, pricelist_data):
+        db.query(cls).filter(cls.id == price_list_id).update(pricelist_data, synchronize_session=False)
 
 
 class Review(Base, BaseModels):
@@ -209,6 +244,19 @@ class Review(Base, BaseModels):
     price_list_id = Column(Integer, ForeignKey('price_list.id'), nullable=False)
     price_of_service = Column(Integer)
     doctor_opinion = Column(Text)
+
+    ###################################
+    # GET ALL REVIEW BY EMAIL OR JMBG #
+    ###################################
+
+    @classmethod
+    def get_all_review_paginate(cls, email, jmbg):
+        review = db.query(cls)
+        if email:
+            review = review.filter(cls.email == email)
+        if jmbg:
+            review = review.filter(cls.jmbg == jmbg)
+        return review.all()
 
 
 class ReviewDocument(Base, BaseModels):
@@ -233,3 +281,15 @@ class Payments(Base, BaseModels):
     price_of_service = Column(Integer, nullable=False)
     paid = Column(Boolean)
     payment_made = Column(Enum(Pays), default=Pays.card)  # Enum cash, card or cash_card
+
+    ####################
+    # GET ALL PAYMENTS #
+    ####################
+
+    @classmethod
+    def get_all_payments(cls, paid):
+        price_list = db.query(cls)
+        if paid:
+            price_list = price_list.filter(cls.paid == paid)
+
+        return price_list.all()

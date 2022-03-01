@@ -15,7 +15,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
+#from model import Base
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
 
@@ -27,8 +27,12 @@ fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
-config.set_main_option("sqlalchemy.url",
-                       "postgresql://postgres:myPassword@localhost:5432/Clinic22")
+config.set_main_option(
+    "sqlalchemy.url",
+    "postgresql://postgres:myPassword@localhost:5432/Clinic22"
+)
+
+
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
 

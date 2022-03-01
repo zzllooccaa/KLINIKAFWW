@@ -1,7 +1,10 @@
 anyio==3.5.0
+asgiref==3.5.0
+click==8.0.4
 fastapi==0.74.1
 fastapi-sessions==0.3.2
 greenlet==1.1.2
+h11==0.13.0
 idna==3.3
 itsdangerous==2.1.0
 psycopg2==2.9.3
@@ -11,3 +14,5 @@ sniffio==1.2.0
 SQLAlchemy==1.4.31
 starlette==0.17.1
 typing_extensions==4.1.1
+unicorn==1.0.3
+uvicorn==0.17.5

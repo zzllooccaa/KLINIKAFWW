@@ -1,18 +1,19 @@
-from fastapi import APIRouter, FastAPI, Response
-from model import User, db
+from fastapi import APIRouter, Response, Depends
+from model import User, db, Role
 import schemas
 from uuid import uuid4
-from sessions.session_backends import backend as test
+
+from sess.sess_verifier import backend_exm
+from sess.sess_fronted import cookie
+from sess.sess_verifier import SessionData, verifier
 
 import errors
-
-
 
 user_router = APIRouter()
 
 
 @user_router.post("/login")
-def login(item: schemas.UserLogin):
+async def login(item: schemas.UserLogin, response: Response):
     user = User.get_user_by_email_and_password(email=item.email, password=item.password)
     if not user:
         return {"ERROR": errors.WRONG_CREDENTIALS}
@@ -21,31 +22,30 @@ def login(item: schemas.UserLogin):
     data = schemas.SessionData(
         username=user.name,
         role=user.role,
-        id=user.id
+        id=user.id,
     )
-    test.create(session, data)
-    print(data)
-    # cookie.attach_to_response(response, session)
+    await backend_exm.create(session, data)
+    cookie.attach_to_response(response, session)
     return user
 
 
-@user_router.post("/create")
-def create_user(item: schemas.UserRegisterLogin):
-    if User.check_user_by_email(email=item.email):
+@user_router.post("/create", dependencies=[Depends(cookie)])
+def create_user(item: schemas.UserRegisterLogin, session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.admin.name:
+        return errors.ERR_USER_NOT_GRANTED
+    if User.check_user_by_email(email=item.email):  # Todo upotrebi or funkciju pogledaj u sqlalchemyiju
         return errors.ERR_USER_ALREADY_EXIST
 
     if User.check_user_by_jmbg(jmbg=item.jmbg):
         return errors.ERR_USER_JMBG_ALREADY_EXIST
-    # Provera da li email ili jmbg vec postoji u bazi
-    # Pogledaj kako se radi or_ filter u sqlalchemy-ju
-    print('item', item)
     try:
         user = User(
             email=item.email,
             password=item.password,
             name=item.name,
             surname=item.surname,
-            jmbg=item.jmbg
+            jmbg=item.jmbg,
+            role=item.role
         )
         db.add(user)
         db.commit()
@@ -57,9 +57,11 @@ def create_user(item: schemas.UserRegisterLogin):
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@user_router.patch("/{user_id}", status_code=200)
-def edit(user_id, user_data: schemas.BaseUserSchema):
-    user = User.get_user_by_id(id=user_id)
+@user_router.patch("/{user_id}", dependencies=[Depends(cookie)], status_code=200)
+def edit(user_id, user_data: schemas.BaseUserSchema, session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.admin.name:
+        return errors.ERR_USER_NOT_GRANTED
+    user = User.get_by_id(id=user_id)
     if not user:
         return {"ERROR": "User id not exist"}
 
@@ -78,24 +80,26 @@ def edit(user_id, user_data: schemas.BaseUserSchema):
     return user
 
 
-@user_router.get("/all_users")
-def get_all_user(email: str = None, name: str = None, surname: str = None):
+@user_router.get("/all_users", dependencies=[Depends(cookie)], status_code=200)
+def get_all_user(email: str = None, name: str = None, surname: str = None,
+                 session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.admin.name:
+        return errors.ERR_USER_NOT_GRANTED
+
     users = User.get_all_user_paginate(email=email, name=name, surname=surname)
-    # for user in users:
-    #     print(users.name)
-    # posts = User.query.order_by(User.time.desc()).paginate(page, per_page, error_out=False)
     return users
 
-# all_user(user_data: schemas.UserSchema):
-# users = User.get_all_user()
-# return users
 
-# users =User.get_all_user(id=item.id, name=item.name, surname=item.surname, jmbg=item.jmbg, email=item.email, address=item.addsress, phone=item.phone)
-# for user in users:
-# print(user)
-# print(user.id, user.email)
 
-# Pogledaj paginate sqlalchemy i vidi kako da vratis 10 korisnika iz prve strane
 
+
+
+
+
+
+
+
+
+#TOdo Pogledaj paginate sqlalchemy i vidi kako da vratis 10 korisnika iz prve strane
 # Add filter LIKE in sqlaalchemy
 # jedan poziv koji ce  mi vratiti sve korisnike ili recimo prvih 10

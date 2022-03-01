@@ -7,6 +7,6 @@ cookie = SessionCookie(
     cookie_name="cookie",
     identifier="general_verifier",
     auto_error=True,
-    secret_key="DO_NOT_USE",
+    secret_key="DONOTUSE",
     cookie_params=cookie_params,
 )

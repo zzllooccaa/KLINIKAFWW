@@ -1,14 +1,18 @@
-from fastapi import APIRouter
-from model import Customers, db
+from fastapi import APIRouter, Depends
+from model import Customers, db, Role
 import schemas
+from sess.sess_fronted import cookie
+from sess.sess_verifier import SessionData, verifier
 
 import errors
 
 customer_router = APIRouter()
 
 
-@customer_router.post("/create")
-def create_customer(item: schemas.AddCustomer):
+@customer_router.post("/create", dependencies=[Depends(cookie)])
+def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.admin.name:
+        return errors.ERR_USER_NOT_GRANTED
     if Customers.check_customer_by_email(email=item.email):
         return errors.ERR_CUSTOMER_ALREADY_EXIST
 
@@ -40,18 +44,18 @@ def create_customer(item: schemas.AddCustomer):
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@customer_router.get("/all_customers")
-def get_all_customer(email: str = None, name: str = None, surname: str = None):
+@customer_router.get("/all_customers", dependencies=[Depends(cookie)])
+def get_all_customer(email: str = None, name: str = None, surname: str = None,
+                     session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.doctor.name:
+        return errors.ERR_USER_NOT_GRANTED
     customers = Customers.get_all_customer_paginate(email=email, name=name, surname=surname)
-    # for user in users:
-    #     print(users.name)
-    # posts = User.query.order_by(User.time.desc()).paginate(page, per_page, error_out=False)
     return customers
 
 
 @customer_router.patch("/{customer_id}", status_code=200)
 def edit(customer_id, customer_data: schemas.BaseUserSchema):
-    customer = Customers.get_customer_by_id(id=customer_id)
+    customer = Customers.get_by_id(id=customer_id)
     if not customer:
         return {"ERROR": "User id not exist"}
 
@@ -68,3 +72,13 @@ def edit(customer_id, customer_data: schemas.BaseUserSchema):
         return {"ERROR": "ERR_CANNOT_EDIT_USER"}
 
     return customer
+
+
+@customer_router.get("/search-customer/{customer_jmbg}", status_code=200)
+def search(customer_jmbg):
+    search_customer = Customers.get_customer_by_jmbg(jmbg=customer_jmbg)
+    if not search_customer:
+        return errors.ERR_USER_NOT_GRANTED
+    print(search_customer)
+    return search_customer
+# Todo search customer ruta koja ce po jmbg da nadje customera

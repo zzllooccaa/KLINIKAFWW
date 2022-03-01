@@ -1,9 +1,8 @@
-from typing import List, Optional, Generic, TypeVar
+from typing import Optional, Generic, TypeVar
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 from enum import Enum
-
-from typing import Literal
+from _datetime import datetime
 
 T = TypeVar('T')
 
@@ -18,10 +17,10 @@ class UserLogin(BaseModel):
 
 
 class UserRegisterLogin(UserLogin):
-    email: str
     name: str
     surname: str
-    jmbg: int
+    jmbg: int  # Todo treba staviti da bude string jer ne moze da pokrije sve brojeve jmbg
+    role: str
 
 
 class AddPriceList(UserId):
@@ -53,9 +52,6 @@ class BaseModelsSchema(BaseModel):
     id: Optional[int]
     date_of_creation: Optional[int] = None
 
-    # class Config:
-    #     orm_mode = True
-
 
 class RequestBaseModels(BaseModel):
     parameter: BaseModelsSchema = Field(...)
@@ -83,10 +79,6 @@ class UserSchema(BaseUserSchema):
 
     class Config:
         orm_mode = True
-
-
-# class RequestUserSchema(BaseUserSchema):
-# parameter: UserSchema = Field(...)
 
 
 class CustomersSchema(BaseUserSchema):
@@ -121,6 +113,7 @@ class PriceListSchema(BaseModel):
     medical_service: Optional[str] = None
     price_of_service: Optional[int] = None
     time_for_exam: Optional[int] = None
+    date_of_end: datetime = None
 
     class Config:
         orm_mode = True
@@ -175,5 +168,5 @@ class PagePerPage(BaseModel):
 
 
 class SessionData(UserId):
-    username = str
-    role = str
+    username: str
+    role: Enum

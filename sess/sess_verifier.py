@@ -3,7 +3,8 @@ from fastapi_sessions.backends.implementations import InMemoryBackend
 from fastapi import HTTPException
 from uuid import UUID
 from schemas import SessionData
-from session_backends import backend
+
+backend_exm = InMemoryBackend[UUID, SessionData]()
 
 
 class BasicVerifier(SessionVerifier[UUID, SessionData]):
@@ -12,12 +13,12 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
             *,
             identifier: str,
             auto_error: bool,
-            backend: InMemoryBackend[UUID, SessionData],
-            auth_http_exception=HTTPException,
+            backend_exm: InMemoryBackend[UUID, SessionData],
+            auth_http_exception: HTTPException,
     ):
         self._identifier = identifier
         self._auto_error = auto_error
-        self._backend = backend
+        self._backend_exm = backend_exm
         self._auth_http_exception = auth_http_exception
 
     @property
@@ -25,24 +26,25 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
         return self._identifier
 
     @property
-    def auto_error(self):
-        return self._auto_error
+    def backend(self):
+        return self._backend_exm
 
     @property
-    def backend(self):
-        return self._backend
+    def auto_error(self):
+        return self._auto_error
 
     @property
     def auth_http_exception(self):
         return self._auth_http_exception
 
     def verify_session(self, model: SessionData) -> bool:
+        """If the session exists, it is valid"""
         return True
 
 
 verifier = BasicVerifier(
     identifier="general_verifier",
     auto_error=True,
-    backend=backend,
-    auth_http_exception=HTTPException(status_code=403, detail="Invalid session!"),
+    backend_exm=backend_exm,
+    auth_http_exception=HTTPException(status_code=403, detail="invalid session"),
 )
