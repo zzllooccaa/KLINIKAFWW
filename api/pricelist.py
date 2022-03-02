@@ -28,11 +28,11 @@ def create_price_list(item: schemas.AddPriceList, session_data: SessionData = De
 
 
 @price_list_router.get("/all_prices", dependencies=[Depends(cookie)])
-def get_all_price(service: str = None, medical_service: str = None, session_data: SessionData = Depends(verifier)):
+def get_all_price(services: str = None, medical_service: str = None, session_data: SessionData = Depends(verifier)):
     if session_data.role.name != Role.admin.name:
         return errors.ERR_USER_NOT_GRANTED
 
-    lists = PriceList.get_all_price(service=service, medical_service=medical_service, )  # Todo dateofendd=null
+    lists = PriceList.get_all_price(services=services, medical_service=medical_service, )  # Todo dateofendd=null
 
     return lists
 
@@ -59,5 +59,25 @@ def edit_price(price_list_id, pricelist_data: schemas.PriceListSchema, session_d
 
     else:
         PriceList.edit_price_list(price_list_id=price_list_id, pricelist_data=pricelist_data_dict)
+        db.add(price_list)
+        db.commit()
 
     return price_list
+
+
+@price_list_router.patch("/delete/{price_list_id}", dependencies=[Depends(cookie)])
+def delete_price(price_list_id, session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.admin.name:
+        return errors.ERR_USER_NOT_GRANTED
+
+    price = PriceList.delete_by_id(id=price_list_id)
+
+    if not price:
+        return errors.ERR_ID_NOT_EXIST
+    price = price[0]
+
+    price.date_of_end = datetime.datetime.now()
+    db.add(price)
+    db.commit()
+
+    return {}

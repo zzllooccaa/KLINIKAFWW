@@ -16,6 +16,30 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    password: Optional[str] = None
+    name: Optional[str] = None
+    surname: Optional[str] = None
+    jmbg: Optional[int] = None
+    role: Optional[str] = None
+
+
+class CustomerUpdate(BaseModel):
+    email: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    personal_medical_history: Optional[str] = None
+    family_medical_history: Optional[str] = None
+    company_name: Optional[str] = None
+    company_pib: Optional[int] = None
+    company_address: Optional[str] = None
+    name: Optional[str] = None
+    surname: Optional[str] = None
+    jmbg: Optional[int] = None
+    address: Optional[str] = None
+    phone: Optional[int] = None
+
+
 class UserRegisterLogin(UserLogin):
     name: str
     surname: str
