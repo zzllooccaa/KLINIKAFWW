@@ -1,6 +1,9 @@
+import json
+
 import simplejson
 import datetime
 import enum
+from json import JSONEncoder
 
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Enum
 from sqlalchemy import create_engine
@@ -85,11 +88,17 @@ class BaseUser(BaseModels):
 
 
 @dataclass
-class User(Base, BaseUser):
+class User(Base, BaseUser, JSONEncoder):
     __tablename__ = 'user'
 
     id: int
     email: str
+    password: str
+    address: str
+    phone: str
+    jmbg: int
+    name: str
+    surname: str
 
     password = Column(String, nullable=False)
     role = Column(Enum(Role), default=Role.doctor)  # Enum polje
@@ -131,7 +140,7 @@ class User(Base, BaseUser):
 
     @classmethod
     def check_user_by_role(cls, role):
-        return db.query(cls).filter(cls.role == role).first()
+        return db.query(cls).filter(cls.role == role).all()
 
     ##################
     # UPDATE METHODS #
@@ -139,6 +148,12 @@ class User(Base, BaseUser):
     @classmethod
     def edit_user(cls, user_id, user_data):
         db.query(cls).filter(cls.id == user_id).update(user_data, synchronize_session=False)
+
+    @classmethod
+    def get_user_by_id(cls, id):
+        return db.query(cls).filter(cls.id == id).first()
+
+
 
 
 class Customers(Base, BaseUser):
@@ -185,7 +200,7 @@ class Customers(Base, BaseUser):
 
     @classmethod
     def get_customer_by_jmbg(cls, jmbg):
-        return db.query(cls).filter(cls.jmbg == jmbg).all()
+        return db.query(cls).filter(cls.jmbg == jmbg).all()  # Stajalo je fist()umesto.all i pucalo je
 
     #################
     # EDIT CUSTOMER #
@@ -234,6 +249,10 @@ class PriceList(Base, BaseModels):
     @classmethod
     def edit_price_list(cls, price_list_id, pricelist_data):
         db.query(cls).filter(cls.id == price_list_id).update(pricelist_data, synchronize_session=False)
+
+    @classmethod
+    def delete_by_id(cls, id):
+        return db.query(cls).filter(cls.id == id).all()
 
 
 class Review(Base, BaseModels):

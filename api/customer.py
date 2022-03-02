@@ -48,37 +48,45 @@ def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depen
 def get_all_customer(email: str = None, name: str = None, surname: str = None,
                      session_data: SessionData = Depends(verifier)):
     if session_data.role.name != Role.doctor.name:
+        print(session_data.role.name)
+        print(Role.doctor.name)
         return errors.ERR_USER_NOT_GRANTED
     customers = Customers.get_all_customer_paginate(email=email, name=name, surname=surname)
     return customers
 
 
-@customer_router.patch("/{customer_id}", status_code=200)
-def edit(customer_id, customer_data: schemas.BaseUserSchema):
-    customer = Customers.get_by_id(id=customer_id)
-    if not customer:
-        return {"ERROR": "User id not exist"}
-
-    customer_data_dict = customer_data.dict(exclude_none=True)
-    try:
-        Customers.edit_customer(customer_id=customer_id, customer_data=customer_data_dict)
-        db.add(customer)
-        db.commit()
-
-    except Exception as e:
-        if 'duplicate key value violates unique constraint' in str(e):
-            return {"ERROR": "ERR_DUPLICATED_ENTRY"}
-
-        return {"ERROR": "ERR_CANNOT_EDIT_USER"}
-
-    return customer
-
-
-@customer_router.get("/search-customer/{customer_jmbg}", status_code=200)
-def search(customer_jmbg):
-    search_customer = Customers.get_customer_by_jmbg(jmbg=customer_jmbg)
-    if not search_customer:
+@customer_router.patch("/{edit_by_id}", dependencies=[Depends(cookie)], status_code=200)
+def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
+         session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.admin.name:
         return errors.ERR_USER_NOT_GRANTED
+    customer = Customers.get_by_id(id=edit_by_id)
+    if not customer:
+        return errors.ERR_ID_NOT_EXIST
+
+    customer_d = customer_data.dict(exclude_none=True)
+    for key, value in customer_d.items():
+        setattr(customer[0], key, value)
+    db.add(customer[0])
+    db.commit()
+    db.refresh(customer[0])
+    return customer
+    #try:
+       # Customers.edit_customer(customer_id=edit_by_id, customer_data=customer_data_dict)
+       # db.add(customer)
+       # db.commit()
+
+    #except Exception as e:
+       # if 'duplicate key value violates unique constraint' in str(e):
+           # return {"ERROR": "ERR_DUPLICATED_ENTRY"}
+
+   # return {}
+
+
+@customer_router.get("/search-customer/{customerjmbg}", status_code=200)
+def search(customerjmbg):
+    search_customer = Customers.get_customer_by_jmbg(jmbg=customerjmbg)
+    if not search_customer:
+        return errors.ERR_JMBG_NOT_EXIST
     print(search_customer)
     return search_customer
-# Todo search customer ruta koja ce po jmbg da nadje customera
