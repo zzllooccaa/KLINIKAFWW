@@ -21,7 +21,7 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
     name: Optional[str] = None
     surname: Optional[str] = None
-    jmbg: Optional[int] = None
+    #jmbg: Optional[int] = None
     role: Optional[str] = None
 
 
@@ -40,10 +40,9 @@ class CustomerUpdate(BaseModel):
     phone: Optional[int] = None
 
 
-class UserRegisterLogin(UserLogin):
+class RegisterUser(UserLogin):
     name: str
-    surname: str
-    jmbg: int  # Todo treba staviti da bude string jer ne moze da pokrije sve brojeve jmbg
+    #surname: str
     role: str
 
 
@@ -118,18 +117,17 @@ class CustomersSchema(BaseUserSchema):
 
 
 class AddCustomer(UserId):
-    email: str
+    email: Optional[str] = None
     date_of_birth: str
-    personal_medical_history: str
-    family_medical_history: str
-    company_name: str
-    company_pib: int
-    company_address: str
+    personal_medical_history: Optional[str] = None
+    family_medical_history: Optional[str] = None
+    company_name: Optional[str] = None
+    company_pib: Optional[int] = None
+    company_address: Optional[str] = None
     name: str
-    surname: str
-    jmbg: int
-    address: str
-    phone: int
+    jmbg: Optional[int] = None
+    address: Optional[str] = None
+    phone: Optional[int] = None
 
 
 class PriceListSchema(BaseModel):
@@ -164,6 +162,14 @@ class ReviewDocumentSchema(BaseModel):
         orm_mode = True
 
 
+class NewReview(BaseModel):
+    #id: str
+    doctor_opinion: Optional[str] = None
+    price_of_service: Optional[int] = None
+    customers_id: int
+    price_list_id: int
+
+
 class PaymentsSchema(BaseModel):
     id: Optional[int] = None
     review_id: Optional[int] = None
@@ -173,6 +179,7 @@ class PaymentsSchema(BaseModel):
     price_of_service: Optional[int] = None
     paid: Optional[int] = None
     payment_made: Optional[str] = None
+    finance_id: Optional[int] = None
 
     class Config:
         orm_mode = True

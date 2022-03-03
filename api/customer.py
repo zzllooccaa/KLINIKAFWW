@@ -9,15 +9,15 @@ import errors
 customer_router = APIRouter()
 
 
-@customer_router.post("/create", dependencies=[Depends(cookie)])
+@customer_router.post("/create_patient", dependencies=[Depends(cookie)])
 def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depends(verifier)):
-    if session_data.role.name != Role.admin.name:
+    if session_data.role.name != Role.doctor.name:
         return errors.ERR_USER_NOT_GRANTED
     if Customers.check_customer_by_email(email=item.email):
         return errors.ERR_CUSTOMER_ALREADY_EXIST
 
-    if Customers.check_customer_by_jmbg(jmbg=item.jmbg):
-        return errors.ERR_CUSTOMER_JMBG_ALREADY_EXIST
+    # if Customers.check_customer_by_jmbg(jmbg=item.jmbg):
+    #     return errors.ERR_CUSTOMER_JMBG_ALREADY_EXIST
 
     try:
         customer = Customers(
@@ -29,7 +29,6 @@ def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depen
             company_pib=item.company_pib,
             company_address=item.company_address,
             name=item.name,
-            surname=item.surname,
             jmbg=item.jmbg,
             address=item.address,
             phone=item.phone
@@ -44,14 +43,15 @@ def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depen
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@customer_router.get("/all_customers", dependencies=[Depends(cookie)])
-def get_all_customer(email: str = None, name: str = None, surname: str = None,
+@customer_router.get("/all_customers/{name}", dependencies=[Depends(cookie)])
+def get_all_customer( name: str = None,
                      session_data: SessionData = Depends(verifier)):
     if session_data.role.name != Role.doctor.name:
         print(session_data.role.name)
         print(Role.doctor.name)
         return errors.ERR_USER_NOT_GRANTED
-    customers = Customers.get_all_customer_paginate(email=email, name=name, surname=surname)
+    print(name)
+    customers = Customers.get_all_customer_paginate(name=name)
     return customers
 
 

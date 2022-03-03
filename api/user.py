@@ -36,22 +36,21 @@ def del_session(response: Response, session_id: UUID = Depends(cookie)):
     return "You have logged out successfully"
 
 
-@user_router.post("/create", dependencies=[Depends(cookie)])
-def create_user(item: schemas.UserRegisterLogin, session_data: SessionData = Depends(verifier)):
+@user_router.post("/create_user", dependencies=[Depends(cookie)])
+def create_user(item: schemas.RegisterUser, session_data: SessionData = Depends(verifier)):
     if session_data.role.name != Role.admin.name:
         return errors.ERR_USER_NOT_GRANTED
     if User.check_user_by_email(email=item.email):
         return errors.ERR_USER_ALREADY_EXIST
 
-    if User.check_user_by_jmbg(jmbg=item.jmbg):
-        return errors.ERR_USER_JMBG_ALREADY_EXIST
+    #if User.check_user_by_jmbg(jmbg=item.jmbg):
+        #return errors.ERR_USER_JMBG_ALREADY_EXIST
     try:
         user = User(
             email=item.email,
             password=item.password,
             name=item.name,
-            surname=item.surname,
-            jmbg=item.jmbg,
+            #surname=item.surname,
             role=item.role
         )
         db.add(user)
@@ -94,12 +93,12 @@ def edit(user_id: int, user_data: schemas.UserUpdate, session_data: SessionData 
 
 
 @user_router.get("/all_users", dependencies=[Depends(cookie)], status_code=200)
-def get_all_user(email: str = None, name: str = None, surname: str = None,
+def get_all_user(email: str = None, name: str = None,
                  session_data: SessionData = Depends(verifier)):
     if session_data.role.name != Role.admin.name:
         return errors.ERR_USER_NOT_GRANTED
 
-    users = User.get_all_user_paginate(email=email, name=name, surname=surname)
+    users = User.get_all_user_paginate(email=email, name=name)
     print(users[0].role)
     return users
 

@@ -57,7 +57,7 @@ class BaseModels(object):
 
     @classmethod
     def get_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id).all()
+        return db.query(cls).filter(cls.id == id).first()
 
 
 class BaseUser(BaseModels):
@@ -66,13 +66,13 @@ class BaseUser(BaseModels):
     def name(self):
         return Column(String(255), nullable=False)
 
-    @declared_attr
-    def surname(self):
-        return Column(String(255), nullable=False)
+    # @declared_attr
+    # def surname(self):
+    #     return Column(String(255), nullable=False)
 
-    @declared_attr
-    def jmbg(self):
-        return Column(Integer, nullable=False, unique=True)  # Unique
+    # @declared_attr
+    # def jmbg(self):
+    #     return Column(Integer, nullable=False, unique=True)  # Unique
 
     @declared_attr
     def email(self):
@@ -96,9 +96,9 @@ class User(Base, BaseUser, JSONEncoder):
     password: str
     address: str
     phone: str
-    jmbg: int
+    # jmbg: int
     name: str
-    surname: str
+    # surname: str
 
     password = Column(String, nullable=False)
     role = Column(Enum(Role), default=Role.doctor)  # Enum polje
@@ -116,14 +116,14 @@ class User(Base, BaseUser, JSONEncoder):
     #################################################
 
     @classmethod
-    def get_all_user_paginate(cls, email, name, surname):
+    def get_all_user_paginate(cls, email, name):
         users = db.query(cls)
         if email:
             users = users.filter(cls.email == email)
         if name:
             users = users.filter(cls.name == name)
-        if surname:
-            users = users.filter(cls.surname == surname)
+        # if surname:
+        #     users = users.filter(cls.surname == surname)
         return users.all()
 
     #########################################
@@ -154,14 +154,13 @@ class User(Base, BaseUser, JSONEncoder):
         return db.query(cls).filter(cls.id == id).first()
 
 
-
-
 class Customers(Base, BaseUser):
     __tablename__ = 'customers'
 
     id: int
     email: str
     date_of_birth = Column(DateTime)
+    jmbg = Column(Integer)
     personal_medical_history = Column(Text)
     family_medical_history = Column(Text)
     company_name = Column(Text)
@@ -184,14 +183,14 @@ class Customers(Base, BaseUser):
     ####################
 
     @classmethod
-    def get_all_customer_paginate(cls, email, name, surname):
+    def get_all_customer_paginate(cls, name):
         customer = db.query(cls)
-        if email:
-            customer = customer.filter(cls.email == email)
+        # if email:
+        #     customer = customer.filter(cls.email == email)
         if name:
-            customer = customer.filter(cls.name == name)
-        if surname:
-            customer = customer.filter(cls.surname == surname)
+            customer = customer.filter(cls.name.ilike('%' + name + '%'))
+        # if surname:
+        #     customer = customer.filter(cls.surname == surname)
         return customer.all()
 
     ##########################
@@ -269,13 +268,18 @@ class Review(Base, BaseModels):
     ###################################
 
     @classmethod
-    def get_all_review_paginate(cls, email, jmbg):
+    def get_review_by_name_paginate(cls, name):
         review = db.query(cls)
-        if email:
-            review = review.filter(cls.email == email)
-        if jmbg:
-            review = review.filter(cls.jmbg == jmbg)
+        if name:
+            review = review.filter(cls.name == name)
         return review.all()
+        # .limit(3)
+
+    # @classmethod
+    # def join_customer_id(cls, id):
+    #     result = db.query(cls)(Customers).join(Customers)
+    #     for customers in result:
+    #         print(customers.id)
 
 
 class ReviewDocument(Base, BaseModels):
@@ -300,6 +304,7 @@ class Payments(Base, BaseModels):
     price_of_service = Column(Integer, nullable=False)
     paid = Column(Boolean)
     payment_made = Column(Enum(Pays), default=Pays.card)  # Enum cash, card or cash_card
+    finance_id = Column(Integer, ForeignKey('review.id'), nullable=False)
 
     ####################
     # GET ALL PAYMENTS #
