@@ -3,6 +3,7 @@ from model import Customers, db, Role
 import schemas
 from sess.sess_fronted import cookie
 from sess.sess_verifier import SessionData, verifier
+from typing import Optional
 
 import errors
 
@@ -44,7 +45,7 @@ def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depen
 
 
 @customer_router.get("/all_customers/{name}", dependencies=[Depends(cookie)])
-def get_all_customer( name: str = None,
+def get_all_customer(name: str = None,
                      session_data: SessionData = Depends(verifier)):
     if session_data.role.name != Role.doctor.name:
         print(session_data.role.name)
@@ -52,6 +53,14 @@ def get_all_customer( name: str = None,
         return errors.ERR_USER_NOT_GRANTED
     print(name)
     customers = Customers.get_all_customer_paginate(name=name)
+    return customers
+
+
+@customer_router.get("/all_customers", dependencies=[Depends(cookie)])
+def get_review_all_customer(session_data: SessionData = Depends(verifier)):
+    if session_data.role.name != Role.doctor.name:
+        return errors.ERR_USER_NOT_GRANTED
+    customers = Customers.get_all_customers()
     return customers
 
 
@@ -71,16 +80,17 @@ def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
     db.commit()
     db.refresh(customer[0])
     return customer
-    #try:
-       # Customers.edit_customer(customer_id=edit_by_id, customer_data=customer_data_dict)
-       # db.add(customer)
-       # db.commit()
+    # try:
+    # Customers.edit_customer(customer_id=edit_by_id, customer_data=customer_data_dict)
+    # db.add(customer)
+    # db.commit()
 
-    #except Exception as e:
-       # if 'duplicate key value violates unique constraint' in str(e):
-           # return {"ERROR": "ERR_DUPLICATED_ENTRY"}
+    # except Exception as e:
+    # if 'duplicate key value violates unique constraint' in str(e):
+    # return {"ERROR": "ERR_DUPLICATED_ENTRY"}
 
-   # return {}
+
+# return {}
 
 
 @customer_router.get("/search-customer/{customerjmbg}", status_code=200)

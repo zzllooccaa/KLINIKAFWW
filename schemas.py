@@ -20,7 +20,7 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     name: Optional[str] = None
-    surname: Optional[str] = None
+    #surname: Optional[str] = None
     #jmbg: Optional[int] = None
     role: Optional[str] = None
 
@@ -53,13 +53,13 @@ class AddPriceList(UserId):
     time_for_exam: int
 
 
-class RoleSchema(Enum):
-    admin: Optional[str] = None
-    doctor: Optional[str] = None
-    finance: Optional[str] = None
-
-    class Config:
-        orm_mode = True
+# class RoleSchema(Enum):
+#     admin: Optional[str] = None
+#     doctor: Optional[str] = None
+#     finance: Optional[str] = None
+#
+#     class Config:
+#         orm_mode = True
 
 
 class PaysSchema(Enum):
@@ -81,8 +81,8 @@ class RequestBaseModels(BaseModel):
 
 
 class BaseUserSchema(BaseModelsSchema):
-    name: Optional[str] = None
-    surname: Optional[str] = None
+    name: str
+    #surname: Optional[str] = None
     jmbg: Optional[int] = None
     email: Optional[str] = None
     address: Optional[str] = None
@@ -177,7 +177,7 @@ class PaymentsSchema(BaseModel):
     user_id: Optional[int] = None
     price_list_id: Optional[int] = None
     price_of_service: Optional[int] = None
-    paid: Optional[int] = None
+    paid: Optional[str] = None
     payment_made: Optional[str] = None
     finance_id: Optional[int] = None
 

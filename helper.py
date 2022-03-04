@@ -11,3 +11,5 @@ def create_new_price(item):
     db.add(price_list)
     db.commit()
     return price_list
+
+#
