@@ -6,7 +6,7 @@ import enum
 from json import JSONEncoder
 
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Enum
-from sqlalchemy import create_engine, join, outerjoin
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import declared_attr
@@ -66,14 +66,6 @@ class BaseUser(BaseModels):
     def name(self):
         return Column(String(255), nullable=False)
 
-    # @declared_attr
-    # def surname(self):
-    #     return Column(String(255), nullable=False)
-
-    # @declared_attr
-    # def jmbg(self):
-    #     return Column(Integer, nullable=False, unique=True)  # Unique
-
     @declared_attr
     def email(self):
         return Column(String, unique=True)
@@ -96,9 +88,7 @@ class User(Base, BaseUser, JSONEncoder):
     password: str
     address: str
     phone: str
-    # jmbg: int
     name: str
-    # surname: str
 
     password = Column(String, nullable=False)
     role = Column(Enum(Role), default=Role.doctor)  # Enum polje
@@ -122,8 +112,7 @@ class User(Base, BaseUser, JSONEncoder):
             users = users.filter(cls.email == email)
         if name:
             users = users.filter(cls.name == name)
-        # if surname:
-        #     users = users.filter(cls.surname == surname)
+
         return users.all()
 
     #########################################
@@ -157,8 +146,6 @@ class User(Base, BaseUser, JSONEncoder):
 class Customers(Base, BaseUser):
     __tablename__ = 'customers'
 
-    #id: int
-    #email: str
     date_of_birth = Column(DateTime)
     jmbg = Column(Integer)
     personal_medical_history = Column(Text)
@@ -169,9 +156,9 @@ class Customers(Base, BaseUser):
 
     review = relationship('Review')
 
-    #############################################################
-    # JOIN VRACA CUSTOMERU POSLEDNJA 3 PREGLEDA BY EMAIL , JMBG #
-    #############################################################
+    #####################################################
+    # JOIN VRACA CUSTOMERU POSLEDNJA 3 PREGLEDA BY NAME #
+    #####################################################
 
     @classmethod
     def get_review_by_name_paginate(cls, name):
@@ -270,44 +257,27 @@ class Review(Base, BaseModels):
     price_list_id = Column(Integer, ForeignKey('price_list.id'), nullable=False)
     price_of_service = Column(Integer)
     doctor_opinion = Column(Text)
+    paid = Column(Boolean, default=False)  # True=naplaceno , False = za naplatu
+    payment_made = Column(Enum(Pays), default=Pays.card)  # Enum cash, card or cash_card
+    date_of_creation_payment = Column(DateTime)
+    finance_id = Column(Integer, ForeignKey('user.id'))
 
-
+    customers_a = relationship('Customers', viewonly=True)
+    doctor_a = relationship('User', viewonly=True, foreign_keys="Review.doctor_id")
+    price_list_a = relationship('PriceList', viewonly=True, foreign_keys="Review.price_list_id")
 
     @classmethod
     def get_review_all(cls):
         review = db.query(cls)
-        # if name:
-        #     users = review.filter(cls.name == name)
-        # if surname:
-        #     users = users.filter(cls.surname == surname)
         return review.all()
 
-    # customers = relationship('Customers')
-
-    ###################################
-    # GET ALL REVIEW BY EMAIL OR JMBG #
-    ###################################
-
-    # @classmethod
-    # def get_review_by_name_paginate(cls, name):
-    #     review = db.query(cls).join(
-    #         Customers, Customers.id == cls.customers_id
-    #     ).filter(Customers.name.ilike('%' + name + '%')).options(joinedload(cls.customers)) \
-    #       .order_by(cls.date_of_creation).limit(3).all()
-
-    # if name:
-    #     review = db.query(cls).filter(cls.name.ilike('%' + name + '%')).order_by(cls.date_of_creation).limit(3).all()
-    # return review
-    #  if name:
-    #      review = review.filter(Customers.id == Review.customers_id)
-    #  return review
-    # .limit(3)
-
-    # @classmethod
-    # def join_customer_id(cls, id):
-    #     result = db.query(cls)(Customers).join(Customers)
-    #     for customers in result:
-    #         print(customers.id)
+    @classmethod
+    def get_review_by_id_paginate(cls, byid):
+        return db.query(cls) \
+            .filter(Review.id == byid) \
+            .options(joinedload(cls.customers_a)) \
+            .options(joinedload(cls.doctor_a)) \
+            .options(joinedload(cls.price_list_a)).first()
 
 
 class ReviewDocument(Base, BaseModels):
@@ -321,32 +291,16 @@ class ReviewDocument(Base, BaseModels):
 
     }
 
+# class Payments(Base, BaseModels):
+# __tablename__ = 'payments'
+#
+# review_id = Column(Integer, ForeignKey('review.id'), nullable=False)
+# customers_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
+# user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+# price_list_id = Column(Integer, ForeignKey('price_list.id'), nullable=False)
+# price_of_service = Column(Integer)
+# paid = Column(Boolean, default=False)
+# payment_made = Column(Enum(Pays), default=Pays.card)  # Enum cash, card or cash_card
+# finance_id = Column(Integer, ForeignKey('review.id'), nullable=False)
 
-class Payments(Base, BaseModels):
-    __tablename__ = 'payments'
-
-    review_id = Column(Integer, ForeignKey('review.id'), nullable=False)
-    customers_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    price_list_id = Column(Integer, ForeignKey('price_list.id'), nullable=False)
-    price_of_service = Column(Integer, nullable=False)
-    paid = Column(Boolean)
-    payment_made = Column(Enum(Pays), default=Pays.card)  # Enum cash, card or cash_card
-    finance_id = Column(Integer, ForeignKey('review.id'), nullable=False)
-
-    #review = relationship('Review')
-
-    ####################
-    # GET ALL PAYMENTS #
-    ####################
-
-   #@classmethod
-    # def get_all_payments(cls, paid):
-    #     payment = db.query(cls).join(
-    #         Review, Review.id == cls.review_id
-    #     ).options(joinedload(cls.review)) \
-    #         .order_by(cls.date_of_creation).all()
-    #     return payment
-    #
-    #  price_list = db.query(cls)
-    # return price_list.filter(cls.paid == paid).all()
+# review = relationship('Review')

@@ -20,8 +20,8 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     name: Optional[str] = None
-    #surname: Optional[str] = None
-    #jmbg: Optional[int] = None
+    # surname: Optional[str] = None
+    # jmbg: Optional[int] = None
     role: Optional[str] = None
 
 
@@ -42,7 +42,7 @@ class CustomerUpdate(BaseModel):
 
 class RegisterUser(UserLogin):
     name: str
-    #surname: str
+    # surname: str
     role: str
 
 
@@ -82,7 +82,7 @@ class RequestBaseModels(BaseModel):
 
 class BaseUserSchema(BaseModelsSchema):
     name: str
-    #surname: Optional[str] = None
+    # surname: Optional[str] = None
     jmbg: Optional[int] = None
     email: Optional[str] = None
     address: Optional[str] = None
@@ -163,23 +163,27 @@ class ReviewDocumentSchema(BaseModel):
 
 
 class NewReview(BaseModel):
-    #id: str
     doctor_opinion: Optional[str] = None
     price_of_service: Optional[int] = None
     customers_id: int
     price_list_id: int
 
 
-class PaymentsSchema(BaseModel):
-    id: Optional[int] = None
-    review_id: Optional[int] = None
-    customers_id: Optional[int] = None
-    user_id: Optional[int] = None
-    price_list_id: Optional[int] = None
-    price_of_service: Optional[int] = None
-    paid: Optional[str] = None
+class NewPayments(BaseModel):
+    paid: Optional[bool] = None
     payment_made: Optional[str] = None
-    finance_id: Optional[int] = None
+
+
+# class PaymentsSchema(BaseModel):
+#     id: Optional[int] = None
+#     review_id: Optional[int] = None
+#     customers_id: Optional[int] = None
+#     user_id: Optional[int] = None
+#     price_list_id: Optional[int] = None
+#     price_of_service: Optional[int] = None
+#     paid: Optional[str] = None
+#     payment_made: Optional[str] = None
+#     finance_id: Optional[int] = None
 
     class Config:
         orm_mode = True

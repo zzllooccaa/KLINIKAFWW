@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends  # , File, UploadFile
-from sqlalchemy import join
+
 
 import model
 import schemas
-from model import Review, Role, db, Customers
+from model import Review, db, Customers
+from utils import auth_user
 
 import errors
 from sess.sess_fronted import cookie
@@ -15,12 +16,7 @@ review_router = APIRouter()
 
 @review_router.post("/create", dependencies=[Depends(cookie)])
 def create_review(item: schemas.NewReview, session_data: SessionData = Depends(verifier)):
-    ##############################################################
-    # CHECK user role. If user is not doctor, then return error. #
-    ##############################################################
-    if session_data.role.name != Role.doctor.name:
-        return errors.ERR_USER_NOT_GRANTED
-
+    auth_user(user=session_data, roles=['doctor'])
     customer = model.Customers.get_by_id(id=item.customers_id)
     if not customer:
         return errors.ERR_ID_NOT_EXIST
@@ -45,22 +41,16 @@ def create_review(item: schemas.NewReview, session_data: SessionData = Depends(v
 
 @review_router.get("/get_all_review", dependencies=[Depends(cookie)])
 def get_all_review(session_data: SessionData = Depends(verifier)):
-    if session_data.role.name != Role.doctor.name:
-        return errors.ERR_USER_NOT_GRANTED
-    review = Review.get_review_all()
-    return review
+    auth_user(user=session_data, roles=['doctor'])
+    return Review.get_review_all()
 
 
 @review_router.get("/all_review_customers/{name}", dependencies=[Depends(cookie)])
 def get_review_all_customer(name: str = None,
                             session_data: SessionData = Depends(verifier)):
-    if session_data.role.name != Role.doctor.name:
-        print(session_data.role.name)
-        print(Role.doctor.name)
-        return errors.ERR_USER_NOT_GRANTED
-    print(name)
-    customers = Customers.get_review_by_name_paginate(name=name)
-    return customers
+    auth_user(user=session_data, roles=['doctor'])
+    return Customers.get_review_by_name_paginate(name=name)
+
 
 # @review_router.post("/upload_file")
 # def create_file(file: bytes = File(...)):
