@@ -1,27 +1,26 @@
-from fastapi import APIRouter, Depends
-import model
-import schemas
-from model import db, Role, Customers, PriceList, User, Review
-from utils import auth_user
+from fastapi import APIRouter, Depends, Body
 
+import schemas
+from model import db, Review
+from utils import auth_user
+from examples import payments_example
 from sess.sess_verifier import SessionData, verifier
 from sess.sess_fronted import cookie
 
 import errors
 import datetime
-
+# from fastapi_pagination import paginate, Page
 payments_router = APIRouter()
 
 
-@payments_router.get("/get_all_review", dependencies=[Depends(cookie)])
-def get_all_review(session_data: SessionData = Depends(verifier)):
+@payments_router.get("/get_all_review/<int:page>",dependencies=[Depends(cookie)])
+def get_all_review(page, session_data: SessionData = Depends(verifier)):
     auth_user(user=session_data, roles=['finance'])
-    review = Review.get_review_all()
-    return review
+    return Review.get_review_paginate(page_num=page)
 
 
-@payments_router.get("/create/{review_id}", dependencies=[Depends(cookie)])
-def create_payment(review_id, session_data: SessionData = Depends(verifier)):
+@payments_router.get("/get/{review_id}", dependencies=[Depends(cookie)])
+def get_one_payment(review_id, session_data: SessionData = Depends(verifier)):
     auth_user(user=session_data, roles=['finance'])
     review_check = Review.get_review_by_id_paginate(byid=review_id)
     if not review_check:
@@ -30,7 +29,8 @@ def create_payment(review_id, session_data: SessionData = Depends(verifier)):
 
 
 @payments_router.patch("/create/{review_id}", dependencies=[Depends(cookie)])
-def create_payment(review_id, item: schemas.NewPayments, session_data: SessionData = Depends(verifier)):
+def create_payment(review_id, item: schemas.NewPayments = payments_example,
+                   session_data: SessionData = Depends(verifier)):
     auth_user(user=session_data, roles=['finance'])
     review_check = Review.get_by_id(id=review_id)
     if not review_check:
@@ -50,6 +50,7 @@ def create_payment(review_id, item: schemas.NewPayments, session_data: SessionDa
         db.rollback()
         print(e)
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
+
 # @payments_router.post("/create", dependencies=[Depends(cookie)])
 # def create_review(item: schemas.PaymentsSchema, session_data: SessionData = Depends(verifier)):
 #############################################################

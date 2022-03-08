@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Response, Depends
+from fastapi import APIRouter, Response, Depends, Body
 from model import User, db
 import schemas
 from uuid import UUID, uuid4
 from utils import auth_user
+from examples import user_example
 
 from sess.sess_verifier import backend_exm
 from sess.sess_fronted import cookie
@@ -38,7 +39,7 @@ def del_session(response: Response, session_id: UUID = Depends(cookie)):
 
 
 @user_router.post("/create_user", dependencies=[Depends(cookie)])
-def create_user(item: schemas.RegisterUser, session_data: SessionData = Depends(verifier)):
+def create_user(item: schemas.RegisterUser = user_example, session_data: SessionData = Depends(verifier)):
     auth_user(user=session_data, roles=['admin'])
     if User.check_user_by_email(email=item.email):
         return errors.ERR_USER_ALREADY_EXIST

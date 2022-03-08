@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
-from model import Customers, db, Role
+from model import Customers, db
 import schemas
 from sess.sess_fronted import cookie
 from sess.sess_verifier import SessionData, verifier
-from typing import Optional
 from utils import auth_user
+from examples import customer_example
 
 import errors
 
@@ -12,7 +12,7 @@ customer_router = APIRouter()
 
 
 @customer_router.post("/create_patient", dependencies=[Depends(cookie)])
-def create_customer(item: schemas.AddCustomer, session_data: SessionData = Depends(verifier)):
+def create_customer(item: schemas.AddCustomer = customer_example, session_data: SessionData = Depends(verifier)):
     auth_user(user=session_data, roles=['doctor'])
     if Customers.check_customer_by_email(email=item.email):
         return errors.ERR_CUSTOMER_ALREADY_EXIST

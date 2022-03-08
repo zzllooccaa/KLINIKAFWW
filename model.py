@@ -1,5 +1,3 @@
-import json
-
 import simplejson
 import datetime
 import enum
@@ -10,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import declared_attr
+from fastapi_pagination import paginate
 
 from dataclasses import dataclass
 
@@ -24,6 +23,7 @@ Base = declarative_base()
 
 
 ########################################################
+#  export PYTHONPATH=.
 # alembic revision --autogenerate -m "user_phone_add"  #
 # alembic upgrade head                                 #
 ########################################################
@@ -267,17 +267,18 @@ class Review(Base, BaseModels):
     price_list_a = relationship('PriceList', viewonly=True, foreign_keys="Review.price_list_id")
 
     @classmethod
-    def get_review_all(cls):
-        review = db.query(cls)
-        return review.all()
+    def get_review_paginate(cls, page_num):
+        return db.query(cls).paginate(per_page=10, page=page_num, error_out=True).all()
 
     @classmethod
-    def get_review_by_id_paginate(cls, byid):
+    def get_review_by_id_paginate(cls, byid, page=1, per_page=20):
+        import paginate_sqlalchemy
+
         return db.query(cls) \
             .filter(Review.id == byid) \
             .options(joinedload(cls.customers_a)) \
             .options(joinedload(cls.doctor_a)) \
-            .options(joinedload(cls.price_list_a)).first()
+            .options(joinedload(cls.price_list_a)).paginate_sqlalchemy()
 
 
 class ReviewDocument(Base, BaseModels):

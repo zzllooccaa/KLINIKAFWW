@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 from model import PriceList, db
 import schemas
 import datetime
@@ -6,6 +6,7 @@ from helper import create_new_price
 from sess.sess_verifier import SessionData, verifier
 from sess.sess_fronted import cookie
 from utils import auth_user
+from examples import price_list_example
 
 import errors
 
@@ -13,7 +14,7 @@ price_list_router = APIRouter()
 
 
 @price_list_router.post("/create", dependencies=[Depends(cookie)])
-def create_price_list(item: schemas.AddPriceList, session_data: SessionData = Depends(verifier)):
+def create_price_list(item: schemas.AddPriceList = price_list_example, session_data: SessionData = Depends(verifier)):
     auth_user(user=session_data, roles=['admin'])
 
     try:

@@ -20,8 +20,6 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     name: Optional[str] = None
-    # surname: Optional[str] = None
-    # jmbg: Optional[int] = None
     role: Optional[str] = None
 
 
@@ -42,7 +40,6 @@ class CustomerUpdate(BaseModel):
 
 class RegisterUser(UserLogin):
     name: str
-    # surname: str
     role: str
 
 
@@ -51,15 +48,6 @@ class AddPriceList(UserId):
     medical_service: str
     price_of_service: int
     time_for_exam: int
-
-
-# class RoleSchema(Enum):
-#     admin: Optional[str] = None
-#     doctor: Optional[str] = None
-#     finance: Optional[str] = None
-#
-#     class Config:
-#         orm_mode = True
 
 
 class PaysSchema(Enum):
@@ -117,7 +105,7 @@ class CustomersSchema(BaseUserSchema):
 
 
 class AddCustomer(UserId):
-    email: Optional[str] = None
+    email: str = None
     date_of_birth: str
     personal_medical_history: Optional[str] = None
     family_medical_history: Optional[str] = None
@@ -173,17 +161,6 @@ class NewPayments(BaseModel):
     paid: Optional[bool] = None
     payment_made: Optional[str] = None
 
-
-# class PaymentsSchema(BaseModel):
-#     id: Optional[int] = None
-#     review_id: Optional[int] = None
-#     customers_id: Optional[int] = None
-#     user_id: Optional[int] = None
-#     price_list_id: Optional[int] = None
-#     price_of_service: Optional[int] = None
-#     paid: Optional[str] = None
-#     payment_made: Optional[str] = None
-#     finance_id: Optional[int] = None
 
     class Config:
         orm_mode = True
