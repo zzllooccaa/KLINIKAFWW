@@ -7,7 +7,7 @@ from api.review import review_router
 from api.payments import payments_router
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_pagination import LimitOffsetPage, Page, add_pagination
+from fastapi_pagination import add_pagination
 
 app = FastAPI()
 
@@ -48,6 +48,9 @@ app.include_router(
     prefix="/payments",
     tags=["payments"],
 )
+
+add_pagination(app)
+
 add_pagination(app)
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")

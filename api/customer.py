@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends
-from model import Customers, db
+from fastapi import APIRouter, Depends, HTTPException
+from model import Customers, db, User
 import schemas
-from sess.sess_fronted import cookie
-from sess.sess_verifier import SessionData, verifier
-from utils import auth_user
+
+from utils import auth_user, get_user_from_header
 from examples import customer_example
 
 import errors
@@ -11,14 +10,13 @@ import errors
 customer_router = APIRouter()
 
 
-@customer_router.post("/create_patient", dependencies=[Depends(cookie)])
-def create_customer(item: schemas.AddCustomer = customer_example, session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['doctor'])
+@customer_router.post("/create_patient")
+def create_customer(item: schemas.AddCustomer, current_user: User = Depends(get_user_from_header)):  # , session_data: SessionData = Depends(verifier)):
+    auth_user(user=current_user, roles=['doctor'])
     if Customers.check_customer_by_email(email=item.email):
-        return errors.ERR_CUSTOMER_ALREADY_EXIST
-
+        return HTTPException(status_code=400, detail=errors.ERR_CUSTOMER_ALREADY_EXIST)
     try:
-        customer = Customers(
+        customers = Customers(
             email=item.email,
             date_of_birth=item.date_of_birth,
             personal_medical_history=item.personal_medical_history,
@@ -31,9 +29,10 @@ def create_customer(item: schemas.AddCustomer = customer_example, session_data: 
             address=item.address,
             phone=item.phone
         )
-        db.add(customer)
+        db.add(customers)
         db.commit()
-        return customer
+        print(customers)
+        return customers
 
     except Exception as e:
         db.rollback()
@@ -41,28 +40,28 @@ def create_customer(item: schemas.AddCustomer = customer_example, session_data: 
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@customer_router.get("/all_customers/{name}", dependencies=[Depends(cookie)])
+@customer_router.get("/all_customers/{name}")
 def get_all_customer(name: str = None,
-                     session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['finance'])
-    return Customers.get_all_customer_paginate(name=name)
+                     current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
+    return Customers.get_customers_by_name_paginate(name=name)
 
 
-@customer_router.get("/all_customers", dependencies=[Depends(cookie)])
-def get_review_all_customer(session_data: SessionData = Depends(verifier)):
+@customer_router.get("/all_customers")
+def get_review_all_customer(current_user: User = Depends(get_user_from_header)):
     # Check user permissions
-    auth_user(user=session_data, roles=['doctor'])
+    auth_user(user=current_user, roles=['doctor'])
 
     return Customers.get_all_customers()
 
 
-@customer_router.patch("/{edit_by_id}", dependencies=[Depends(cookie)], status_code=200)
+@customer_router.patch("/{edit_by_id}")
 def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
-         session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['doctor'])
+         current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
     customer = Customers.get_by_id(id=edit_by_id)
     if not customer:
-        return errors.ERR_ID_NOT_EXIST
+        return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
 
     customer_d = customer_data.dict(exclude_none=True)
     for key, value in customer_d.items():
@@ -73,10 +72,10 @@ def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
     return customer
 
 
-@customer_router.get("/search-customer/{customer_jmbg}", status_code=200)
-def search(customer_jmbg, session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['doctor'])
+@customer_router.get("/search-customer/{customer_jmbg}")
+def search(customer_jmbg, current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
     search_customer = Customers.get_customer_by_jmbg(jmbg=customer_jmbg)
     if not search_customer:
-        return errors.ERR_JMBG_NOT_EXIST
+        return HTTPException(status_code=400, detail=errors.ERR_JMBG_NOT_EXIST)
     return search_customer

@@ -1,44 +1,49 @@
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends, HTTPException
 
 import schemas
-from model import db, Review
-from utils import auth_user
+from model import db, Review, User
 from examples import payments_example
-from sess.sess_verifier import SessionData, verifier
-from sess.sess_fronted import cookie
+
+from utils import auth_user, get_user_from_header
 
 import errors
 import datetime
-# from fastapi_pagination import paginate, Page
+
+from fastapi_pagination import Page, LimitOffsetPage
+
 payments_router = APIRouter()
 
 
-@payments_router.get("/get_all_review/<int:page>",dependencies=[Depends(cookie)])
-def get_all_review(page, session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['finance'])
-    return Review.get_review_paginate(page_num=page)
+@payments_router.get("/get_all_review", response_model=Page[schemas.PaymentSchema])
+@payments_router.get("/get_all_review/limit-offset", response_model=LimitOffsetPage[schemas.PaymentSchema])
+def get_all_review(current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['finance'])
+    print(current_user.role)
+    return Review.get_review_paginate()
 
 
-@payments_router.get("/get/{review_id}", dependencies=[Depends(cookie)])
-def get_one_payment(review_id, session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['finance'])
+@payments_router.get("/get/{review_id}")
+def get_one_payment(review_id, current_user: User = Depends(get_user_from_header)):
+    print(current_user.role)
+    auth_user(user=current_user, roles=['finance'])
+    print(current_user.role)
     review_check = Review.get_review_by_id_paginate(byid=review_id)
     if not review_check:
-        return errors.ERR_ID_NOT_EXIST
+        return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
     return review_check
 
 
-@payments_router.patch("/create/{review_id}", dependencies=[Depends(cookie)])
+@payments_router.patch("/create/{review_id}")
 def create_payment(review_id, item: schemas.NewPayments = payments_example,
-                   session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['finance'])
+                   current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['finance'])
     review_check = Review.get_by_id(id=review_id)
     if not review_check:
-        return errors.ERR_ID_NOT_EXIST
+        return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
 
     try:
         payments = Review(
-            finance_id=session_data.id,
+            finance_id=current_user.id,
             paid=item.paid,
             payment_made=item.payment_made,
             date_of_creation_payment=datetime.datetime.now()
