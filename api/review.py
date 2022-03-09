@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends  # , File, UploadFile
 
 
+
 import model
 import schemas
-from model import Review, db, Customers
+from model import Review, db, Customers, User
 from utils import auth_user
+from utils import auth_user, get_user_from_header
 
 import errors
 from sess.sess_fronted import cookie
@@ -14,9 +16,9 @@ from sess.sess_verifier import SessionData, verifier
 review_router = APIRouter()
 
 
-@review_router.post("/create", dependencies=[Depends(cookie)])
-def create_review(item: schemas.NewReview, session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['doctor'])
+@review_router.post("/create")
+def create_review(item: schemas.NewReview, current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
     customer = model.Customers.get_by_id(id=item.customers_id)
     if not customer:
         return errors.ERR_ID_NOT_EXIST
@@ -26,7 +28,7 @@ def create_review(item: schemas.NewReview, session_data: SessionData = Depends(v
         review = Review(
             doctor_opinion=item.doctor_opinion,
             price_of_service=item.price_of_service,
-            doctor_id=session_data.id,
+            doctor_id=current_user.id,
             customers_id=customer.id,
             price_list_id=price.id
         )
@@ -39,16 +41,16 @@ def create_review(item: schemas.NewReview, session_data: SessionData = Depends(v
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@review_router.get("/get_all_review", dependencies=[Depends(cookie)])
-def get_all_review(session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['doctor'])
+@review_router.get("/get_all_review")
+def get_all_review(current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
     return Review.get_review_all()
 
 
-@review_router.get("/all_review_customers/{name}", dependencies=[Depends(cookie)])
+@review_router.get("/all_review_customers/{name}")
 def get_review_all_customer(name: str = None,
-                            session_data: SessionData = Depends(verifier)):
-    auth_user(user=session_data, roles=['doctor'])
+                            current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
     return Customers.get_review_by_name_paginate(name=name)
 
 
