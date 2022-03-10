@@ -4,10 +4,8 @@ import schemas
 from uuid import uuid4
 
 from examples import user_example
-from fastapi.encoders import jsonable_encoder
 from utils import auth_user, get_user_from_header
 
-from sess.sess_fronted import cookie
 
 import errors
 
@@ -31,7 +29,7 @@ async def login(item: schemas.UserLogin):
     return _update_user_session(user=user, session_id='{}:{}'.format(user.id, uuid4()))
 
 
-@user_router.get('/logout')
+@user_router.put('/logout')
 def del_session(current_user: User = Depends(get_user_from_header)):
     _update_user_session(user=current_user, session_id=None)
     return {}
@@ -42,13 +40,16 @@ def create_user(item: schemas.RegisterUser = user_example, current_user: User = 
     auth_user(user=current_user, roles=['admin'])
     if User.check_user_by_email(email=item.email):
         return HTTPException(status_code=400, detail=errors.ERR_USER_ALREADY_EXIST)
+    if User.check_user_by_jmbg(email=item.jmbg):
+        return HTTPException(status_code=400, detail=errors.ERR_USER_JMBG_ALREADY_EXIST)
 
     try:
         user = User(
             email=item.email,
             password=item.password,
             name=item.name,
-            role=item.role
+            role=item.role,
+            jmbg=item.jmbg
         )
         db.add(user)
         db.commit()
@@ -60,37 +61,30 @@ def create_user(item: schemas.RegisterUser = user_example, current_user: User = 
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@user_router.get("/user/{user_id}", dependencies=[Depends(cookie)], status_code=200)
+@user_router.get("/user/{user_id}", status_code=200)
 def get_user_by_id(user_id, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
-    # return user[user_id]
     return User.get_by_id(id=user_id)
 
 
-@user_router.patch("/user/{user_id}", dependencies=[Depends(cookie)], status_code=200)
+@user_router.patch("/user/{user_id}", status_code=200)
 def edit(user_id: int, user_data: schemas.UserUpdate, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
-    user = User.get_user_by_id(id=user_id)
-    if not user:
+    user_db = User.get_by_id(id=user_id)
+    if not user_db:
         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
-    stored_item_data = User[user_id]
-    stored_item_model = User(**stored_item_data)
-    update_data = user_data.dict(exclude_unset=True)
-    updated_item = stored_item_model.copy(update=update_data)
-    user[user_id] = jsonable_encoder(updated_item)
-    return updated_item
-    # user_d = schemas.UserUpdate
-    # user_d = user_data.dict(exclude_unset=True)
-    # print(user_d)
-    # for key, value in user_d.items():
-    #     setattr(user[0], key, value)
-    # db.add(user_d)
-    # db.commit()
-    # db.refresh(user_d)
-    # return user
+    user_data_dic = user_data.dict(exclude_none=True)
+    if user_data_dic['email'] == User.email:
+        return errors
+    user_data_dic = user_data.dict(exclude_none=True)
+    User.edit_user(user_id=user_id, user_data=user_data_dic)
+    db.add(user_db)
+    db.commit()
+    db.refresh(user_db)
+    return user_db
 
 
-@user_router.get("/all_users", dependencies=[Depends(cookie)], status_code=200)
+@user_router.get("/all_users", status_code=200)
 def get_all_user(email: str = None, name: str = None,
                  current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
@@ -99,7 +93,7 @@ def get_all_user(email: str = None, name: str = None,
     return users
 
 
-@user_router.get("/users_by_role", dependencies=[Depends(cookie)], status_code=200)
+@user_router.get("/{users_by_role}", status_code=200)
 def get_user_by_role(user_by_role, current_user: User = Depends(get_user_from_header)):
     search_user = User.check_user_by_role(role=user_by_role)
     auth_user(user=current_user, roles=['admin'])
@@ -108,12 +102,14 @@ def get_user_by_role(user_by_role, current_user: User = Depends(get_user_from_he
     return search_user
 
 
-@user_router.delete("/{delete_by_id}", dependencies=[Depends(cookie)], status_code=200)
-def delete_user(delete_user, current_user: User = Depends(get_user_from_header)):
+@user_router.patch("/{user_id}", status_code=200)
+def delete_user(user_id, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
-    user = User.get_by_id(id=delete_user)
+    user = User.get_by_id(id=user_id)
     if not user:
         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
-    db.delete(user)
+    user.deleted = True
+    db.add(user)
     db.commit()
+
     return {}

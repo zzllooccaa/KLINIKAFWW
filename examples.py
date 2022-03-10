@@ -41,7 +41,8 @@ user_example = Body(
                 "email": "Please enter a valid email.",
                 "password": "Do not show your password to anyone",
                 "name": "Enter name and surname",
-                "role": "Choose role for User it can be doctor, admin or finance"
+                "role": "Choose role for User it can be doctor, admin or finance",
+                "jmbg": " Unique 13 digits number"
             }
         }
     }

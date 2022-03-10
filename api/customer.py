@@ -51,7 +51,6 @@ def get_all_customer(name: str = None,
 def get_review_all_customer(current_user: User = Depends(get_user_from_header)):
     # Check user permissions
     auth_user(user=current_user, roles=['doctor'])
-
     return Customers.get_all_customers()
 
 

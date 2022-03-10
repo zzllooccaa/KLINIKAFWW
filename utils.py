@@ -6,11 +6,9 @@ from model import User
 
 
 def get_user_from_header(session_id: str = Header(None)):
-    print(session_id)
     if session_id:
         # Ger from db by session_id
         user = User.get_by_session_id(session_id)
-        print(user)
         if user:
             return user
     raise HTTPException(
@@ -21,6 +19,5 @@ def get_user_from_header(session_id: str = Header(None)):
 
 def auth_user(user, roles):
     """if"""
-    print(user, user.role)
     if user.role.name not in roles:
         raise HTTPException(status_code=404, detail=errors.ERR_USER_NOT_GRANTED)
