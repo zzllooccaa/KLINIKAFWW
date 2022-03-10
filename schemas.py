@@ -2,7 +2,7 @@ from typing import Optional, Generic, TypeVar, List
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 from enum import Enum
-from _datetime import datetime,  date
+from _datetime import datetime, date
 
 T = TypeVar('T')
 
@@ -14,6 +14,7 @@ class UserId(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
 
 
 class CustomerUpdate(BaseModel):
@@ -34,6 +35,7 @@ class CustomerUpdate(BaseModel):
 class RegisterUser(UserLogin):
     name: str
     role: str
+    jmbg: str
 
 
 class AddPriceList(UserId):
@@ -89,7 +91,7 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
     name: Optional[str] = None
     role: Optional[str] = None
-    #doctor_a: BaseUserSchema
+    jmbg: Optional[str] = None
 
 
 class CustomersSchema(BaseUserSchema):
@@ -200,3 +202,7 @@ class PagePerPage(BaseModel):
 class SessionData(UserId):
     username: str
     role: Enum
+
+
+class UserRead(BaseUserSchema):
+    id: int

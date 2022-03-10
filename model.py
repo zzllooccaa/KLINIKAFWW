@@ -11,7 +11,6 @@ from sqlalchemy.orm import sessionmaker, joinedload, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import declared_attr
 
-
 from dataclasses import dataclass
 
 DATABASE_URL = "postgresql://postgres:myPassword@localhost:5432/Clinic22"
@@ -25,7 +24,8 @@ Base = declarative_base()
 
 
 ########################################################
-#  export PYTHONPATH=.
+# export PYTHONPATH=.                                  #
+# alembic upgrade head                                 #
 # alembic revision --autogenerate -m "user_phone_add"  #
 # alembic upgrade head                                 #
 ########################################################
@@ -59,11 +59,13 @@ class BaseModels(object):
 
     @classmethod
     def get_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id).first()
+        return db.query(cls)\
+            .filter(cls.id == id, ~User.deleted, PriceList.date_of_end == None)\
+            .first()
 
     @classmethod
     def get_by_session_id(cls, session_id):
-        return db.query(cls).filter(cls.session_id == session_id).first()
+        return db.query(cls).filter(User.session_id == session_id, ~User.deleted).first()
 
 
 class BaseUser(BaseModels):
@@ -95,10 +97,28 @@ class User(Base, BaseUser, JSONEncoder):
     address: str
     phone: str
     name: str
+    session_id: str
+    Role.role: str
 
     password = Column(String, nullable=False)
     role = Column(Enum(Role), default=Role.doctor)  # Enum polje
     session_id = Column(String(100))
+    jmbg = Column(String, unique=True)
+    deleted = Column(Boolean, default=False)
+
+    #reviews = relationship('Review', foreign_keys="User.reviews")
+
+    ########################
+    # GET REVIEW BY DOCTOR #
+    ########################
+
+    # @classmethod
+    # def get_review_by_doctor_paginate(cls, name):
+    #     return db.query(cls) \
+    #         .join(Review, Review.doctor_id == User.id) \
+    #         .filter(User.name.ilike('%' + name + '%'), ~cls.deleted) \
+    #         .options(joinedload(cls.reviews)) \
+    #         .order_by(cls.date_of_creation).all()
 
     ################################
     # GET USER BY EMAIL & PASSWORD #
@@ -106,7 +126,9 @@ class User(Base, BaseUser, JSONEncoder):
 
     @classmethod
     def get_user_by_email_and_password(cls, email, password):
-        return db.query(cls).filter(cls.email == email, cls.password == password).first()
+        return db.query(cls)\
+            .filter(cls.email == email, cls.password == password, ~cls.deleted)\
+            .first()
 
     #################################################
     # GET ALL USER SEARCHED BY EMAIL,NAME & SURNAME #
@@ -114,11 +136,11 @@ class User(Base, BaseUser, JSONEncoder):
 
     @classmethod
     def get_all_user_paginate(cls, email, name):
-        users = db.query(cls)
+        users = db.query(cls).filter(~cls.deleted)
         if email:
-            users = users.filter(cls.email == email)
+            users = users.filter(cls.email == email, ~User.deleted)
         if name:
-            users = users.filter(cls.name == name)
+            users = users.filter(cls.name == name, ~User.deleted)
 
         return users.all()
 
@@ -128,26 +150,31 @@ class User(Base, BaseUser, JSONEncoder):
 
     @classmethod
     def check_user_by_email(cls, email):
-        return db.query(cls).filter(cls.email == email).first()
+        return db.query(cls).filter(cls.email == email, ~User.deleted).first()
 
     @classmethod
     def check_user_by_jmbg(cls, jmbg):
-        return db.query(cls).filter(cls.jmbg == jmbg).first()
+        return db.query(cls).filter(cls.jmbg == jmbg, ~User.deleted).first()
 
     @classmethod
     def check_user_by_role(cls, role):
-        return db.query(cls).filter(cls.role == role).all()
+        return db.query(cls).filter(cls.role == role, ~cls.deleted).all()
 
     ##################
     # UPDATE METHODS #
     ##################
     @classmethod
     def edit_user(cls, user_id, user_data):
-        db.query(cls).filter(cls.id == user_id).update(user_data, synchronize_session=False)
+        db.query(cls).filter(cls.id == user_id, ~cls.deleted)\
+            .update(user_data, synchronize_session=False)
+
+    ##################
+    # GET USER BY ID #
+    ##################
 
     @classmethod
     def get_user_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id).all()
+        return db.query(cls).filter(cls.id == id, ~cls.deleted).all()
 
 
 class Customers(Base, BaseUser):
@@ -166,8 +193,9 @@ class Customers(Base, BaseUser):
     company_name: str
     company_pib: str
     company_address: str
+    session_id: str
 
-    date_of_birth = Column(DateTime)
+    date_of_birth = Column(DateTime, nullable=False)
     jmbg = Column(String)
     personal_medical_history = Column(Text)
     family_medical_history = Column(Text)
@@ -185,7 +213,8 @@ class Customers(Base, BaseUser):
     def get_review_by_name_paginate(cls, name):
         customers = db.query(cls).join(
             Review, Review.id == cls.id
-        ).filter(Customers.name.ilike('%' + name + '%')).options(joinedload(cls.review)) \
+        ).filter(Customers.name.ilike('%' + name + '%'))\
+            .options(joinedload(cls.review)) \
             .order_by(cls.date_of_creation).limit(3).all()
         return customers
 
@@ -198,7 +227,7 @@ class Customers(Base, BaseUser):
 
     @classmethod
     def check_customer_by_jmbg(cls, jmbg):
-        return db.query(cls).filter(cls.jmbg == jmbg).first()
+        return db.query(cls).filter(cls.jmbg == jmbg, cls.jmbg != None).first()
 
     ########################
     # GET CUSTOMER BY NAME #
@@ -206,7 +235,8 @@ class Customers(Base, BaseUser):
 
     @classmethod
     def get_customers_by_name_paginate(cls, name):
-        customers = db.query(cls).filter(Customers.name.ilike('%' + name + '%')) \
+        customers = db.query(cls). \
+            filter(Customers.name.ilike('%' + name + '%')) \
             .order_by(cls.date_of_creation).all()
         return customers
 
@@ -216,8 +246,7 @@ class Customers(Base, BaseUser):
 
     @classmethod
     def get_all_customers(cls):
-        customer = db.query(cls)
-        return customer.all()
+        return db.query(cls).all()
 
     ##########################
     # CHECK CUSTOMER BY JMBG #
@@ -231,9 +260,9 @@ class Customers(Base, BaseUser):
     # EDIT CUSTOMER #
     #################
 
-    @classmethod
-    def edit_customer(cls, customer_id, customer_data):
-        db.query(cls).filter(cls.id == customer_id).update(customer_data, synchronize_session=False)
+    # @classmethod
+    # def edit_customer(cls, customer_id, customer_data):
+    #     db.query(cls).filter(cls.id == customer_id).update(customer_data, synchronize_session=False)
 
 
 class PriceList(Base, BaseModels):
@@ -251,7 +280,9 @@ class PriceList(Base, BaseModels):
 
     @classmethod
     def check_price_list_by_services(cls, services):
-        return db.query(cls).filter(cls.services == services).first()
+        return db.query(cls)\
+            .filter(cls.services == services, cls.date_of_end == None)\
+            .first()
 
     ###################
     # GET ALL PRICE'S #
@@ -259,7 +290,7 @@ class PriceList(Base, BaseModels):
 
     @classmethod
     def get_all_price(cls, services, medical_service):
-        price_list = db.query(cls)
+        price_list = db.query(cls).filter(cls.date_of_end == None)
         if services:
             price_list = price_list.filter(cls.services == services)
         if medical_service:
@@ -267,13 +298,15 @@ class PriceList(Base, BaseModels):
 
         return price_list.all()
 
-    ##################
-    # EDIT PRICE_LIST #
-    ##################
+    ##############################
+    # EDIT PRICE_LIST AND DELETE #
+    ##############################
 
     @classmethod
     def edit_price_list(cls, price_list_id, pricelist_data):
-        db.query(cls).filter(cls.id == price_list_id).update(pricelist_data, synchronize_session=False)
+        db.query(cls)\
+            .filter(cls.id == price_list_id, cls.date_of_end == None)\
+            .update(pricelist_data, synchronize_session=False)
 
     @classmethod
     def delete_by_id(cls, id):
@@ -301,16 +334,31 @@ class Review(Base, BaseModels):
     def get_review_paginate(cls):
         return paginate(db.query(cls).all())
 
-        # return db.query(cls).paginate(per_page=10, page=page_num, error_out=True).all()
-
     @classmethod
     def get_review_by_id_paginate(cls, byid):
+        return paginate(db.query(cls) \
+                        .filter(Review.id == byid) \
+                        .options(joinedload(cls.customers_a)) \
+                        .options(joinedload(cls.doctor_a)) \
+                        .options(joinedload(cls.price_list_a)).all())
 
-        return db.query(cls) \
-            .filter(Review.id == byid) \
-            .options(joinedload(cls.customers_a)) \
-            .options(joinedload(cls.doctor_a)) \
-            .options(joinedload(cls.price_list_a)).all()
+    @classmethod
+    def get_payment_by_doctor_paginate(cls, name):
+        return paginate(db.query(cls) \
+                        .filter(User.name.ilike('%' + name + '%'))\
+                        or filter(Review.id.ilike('%' + name + '%'))\
+                        .options(joinedload(cls.customers_a)) \
+                        .options(joinedload(cls.doctor_a)) \
+                        .options(joinedload(cls.price_list_a)).all())
+
+    @classmethod
+    def get_review_paid(cls):
+        return paginate(db.query(cls) \
+                        .filter(Review.paid == True) \
+                        .options(joinedload(cls.customers_a)) \
+                        .options(joinedload(cls.doctor_a)) \
+                        .options(joinedload(cls.price_list_a)) \
+                        .order_by(cls.date_of_creation).all())
 
 
 class ReviewDocument(Base, BaseModels):
@@ -323,17 +371,3 @@ class ReviewDocument(Base, BaseModels):
         'polymorphic_identity': 'review_document',
 
     }
-
-# class Payments(Base, BaseModels):
-# __tablename__ = 'payments'
-#
-# review_id = Column(Integer, ForeignKey('review.id'), nullable=False)
-# customers_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
-# user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-# price_list_id = Column(Integer, ForeignKey('price_list.id'), nullable=False)
-# price_of_service = Column(Integer)
-# paid = Column(Boolean, default=False)
-# payment_made = Column(Enum(Pays), default=Pays.card)  # Enum cash, card or cash_card
-# finance_id = Column(Integer, ForeignKey('review.id'), nullable=False)
-
-# review = relationship('Review')

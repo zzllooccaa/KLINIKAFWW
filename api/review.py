@@ -1,17 +1,12 @@
-from fastapi import APIRouter, Depends  # , File, UploadFile
-
-
-
+from fastapi import APIRouter, Depends
 import model
 import schemas
+
 from model import Review, db, Customers, User
-from utils import auth_user
 from utils import auth_user, get_user_from_header
 
 import errors
-from sess.sess_fronted import cookie
 
-from sess.sess_verifier import SessionData, verifier
 
 review_router = APIRouter()
 
@@ -52,12 +47,3 @@ def get_review_all_customer(name: str = None,
                             current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
     return Customers.get_review_by_name_paginate(name=name)
-
-
-# @review_router.post("/upload_file")
-# def create_file(file: bytes = File(...)):
-#     return {"file_size": len(file)}
-
-# @review_router.post("/upload_file")
-# def create_upload_file(file: ReviewDocument):
-#     return {"filename": file.url}
