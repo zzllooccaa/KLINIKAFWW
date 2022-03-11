@@ -16,10 +16,9 @@ class UserLogin(BaseModel):
     password: str
 
 
-
 class CustomerUpdate(BaseModel):
     email: Optional[str] = None
-    date_of_birth: Optional[datetime] = None
+    date_of_birth: Optional[str] = None
     personal_medical_history: Optional[str] = None
     family_medical_history: Optional[str] = None
     company_name: Optional[str] = None
@@ -94,8 +93,8 @@ class UserUpdate(BaseModel):
     jmbg: Optional[str] = None
 
 
-class CustomersSchema(BaseUserSchema):
-    date_of_birth: Optional[datetime] = None
+class CustomersSchema(BaseModel):#BaseUserSchema):
+    date_of_birth: Optional[str] = None
     personal_medical_history: Optional[str] = None
     family_medical_history: Optional[str] = None
     company_name: Optional[str] = None
@@ -108,7 +107,7 @@ class CustomersSchema(BaseUserSchema):
 
 class AddCustomer(BaseModel):
     email: Optional[str] = None
-    date_of_birth: Optional[date]
+    date_of_birth: Optional[str]
     personal_medical_history: Optional[str] = None
     family_medical_history: Optional[str] = None
     company_name: Optional[str] = None
@@ -206,3 +205,6 @@ class SessionData(UserId):
 
 class UserRead(BaseUserSchema):
     id: int
+
+
+

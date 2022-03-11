@@ -9,42 +9,9 @@ from utils import auth_user, get_user_from_header
 import errors
 import datetime
 
-from fastapi_pagination import Page, LimitOffsetPage
+from fastapi_pagination import LimitOffsetPage, Page
 
 payments_router = APIRouter()
-
-
-# @payments_router.get("/get_all_payments", response_model=LimitOffsetPage[schemas.PaymentSchema])
-# def get_all_payments(current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['finance'])
-#     print(current_user.role)
-#     return Review.get_review_paginate()  #
-#
-#
-# @payments_router.get("/{name}")
-# def get_payments_by_doctor(name: str = None,
-#                            current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['finance'])
-#     return Review.get_review_by_doctor_paginate(name=name)  #
-#
-#
-# @payments_router.get("/get_all_payments/paid", \
-#                      response_model=LimitOffsetPage[schemas.PaymentSchema])
-# def get_paid_review(current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['finance'])
-#     print(current_user.role)
-#     return Review.get_review_paid()
-#
-#
-# @payments_router.get("/get/{review_id}")
-# def get_one_payment(review_id, current_user: User = Depends(get_user_from_header)):
-#     print(current_user.role)
-#     auth_user(user=current_user, roles=['finance'])
-#     print(current_user.role)
-#     review_check = Review.get_review_by_id_paginate(byid=review_id)
-#     if not review_check:
-#         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
-#     return review_check  #
 
 
 @payments_router.patch("/create/{review_id}")
@@ -71,17 +38,9 @@ def create_payment(review_id, item: schemas.NewPayments = payments_example,
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@payments_router.get("/payments/get_all_payments/{name}",
-                     response_model=LimitOffsetPage[schemas.PaymentSchema])
-def get_all_payments(name: str = None, current_user: User = Depends(get_user_from_header)):
+@payments_router.get("/get_all_payments/", response_model=Page)
+#@payments_router.get("/get_all_review/limit-offset", response_model=LimitOffsetPage)
+def get_all_payments(item: str = None, byid: int = None, paid: bool = None,  current_user: User = Depends(get_user_from_header)):#schemas.PaymentSearch,
     auth_user(user=current_user, roles=['finance'])
-    a = Review.get_payment_by_doctor_paginate(name=name)
-    return a
-    if not a:
-     review_check = Review.get_review_by_id_paginate(byid=name)
+    review_check = Review.search_payments(name=item, id=byid, paid=paid)
     return review_check
-    if not review_check:
-        b = Review.get_review_paid()
-        return b
-    if not b:
-        return Review.get_review_paginate()

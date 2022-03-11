@@ -3,8 +3,6 @@ from model import PriceList, db , User
 import schemas
 import datetime
 from helper import create_new_price
-from sess.sess_verifier import SessionData, verifier
-from sess.sess_fronted import cookie
 from examples import price_list_example
 from utils import auth_user, get_user_from_header
 
