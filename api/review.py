@@ -36,14 +36,13 @@ def create_review(item: schemas.NewReview, current_user: User = Depends(get_user
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@review_router.get("/get_all_review")
-def get_all_review(current_user: User = Depends(get_user_from_header)):
-    auth_user(user=current_user, roles=['doctor'])
-    return Review.get_review_all()
+#@review_router.get("/get_all_review2")
+# def get_all_review(current_user: User = Depends(get_user_from_header)):
+    # auth_user(user=current_user, roles=['doctor'])
+    # return Review.get_review_all()
 
 
-@review_router.get("/all_review_customers/{name}")
-def get_review_all_customer(name: str = None,
-                            current_user: User = Depends(get_user_from_header)):
+@review_router.get("/all_review_review")
+def get_review_all_customer(name: str = None, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
     return Customers.get_review_by_name_paginate(name=name)
