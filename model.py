@@ -13,6 +13,8 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from dataclasses import dataclass
 
+import errors
+
 DATABASE_URL = "postgresql://postgres:myPassword@localhost:5432/Clinic22"
 
 engine = create_engine(
@@ -172,7 +174,7 @@ class User(Base, BaseUser, JSONEncoder):
     # GET USER BY ID #
     ##################
     @classmethod
-    def get_search_user(cls, names, by_ids,by_roles):
+    def get_search_user(cls, names, by_ids, by_roles):
         users = db.query(cls)
         if names:
             users = users.filter(User.name.ilike('%' + names + '%'))
@@ -231,23 +233,24 @@ class Customers(Base, BaseUser):
             return customers
         return db.query(Review).order_by(cls.date_of_creation).all()
 
+    ##################################
+    # CHECK CUSTOMER BY EMAIL , JMBG #
+    ##################################
+    @classmethod
+    def check_customer_by_email(cls, email):
+        return db.query(cls).filter(cls.email == email, cls.email != None).first()
+
     @classmethod
     def get_search_customers(cls, name, byjmbg):
-        customers = db.query(cls)
+        payments = db.query(cls)
         if name:
-            customers = customers.filter(Customers.name.ilike('%' + name + '%'))
+            payments = payments.filter(User.name.ilike('%' + name + '%'))
         if byjmbg:
-            customers = customers.filter(cls.jmbg == byjmbg)
+            payments = payments.filter(cls.jmbg == byjmbg)
+        return paginate(payments.all())
 
-        return paginate(customers.order_by(cls.date_of_creation).all())
 
 
-##################################
-# CHECK CUSTOMER BY EMAIL , JMBG #
-##################################
-# @classmethod
-# def check_customer_by_email(cls, email):
-#     return db.query(cls).filter(cls.email == email, cls.email != None).first()
 #
 #
 # @classmethod
@@ -281,17 +284,7 @@ class Customers(Base, BaseUser):
 ##########################
 
 
-# @classmethod
-#     def search_payments(cls, name, id, paid):
-#         payments = db.query(cls)
-#         if name:
-#             payments = payments.filter(User.name.ilike('%' + name + '%'))
-#         if id:
-#             payments = payments.filter(Review.id == id)
-#         if paid:
-#             payments = payments.filter(Review.paid == True)
-#         if not paid:
-#             payments = payments.filter(Review.paid == False)
+
 #################
 # EDIT CUSTOMER #
 #################
@@ -400,6 +393,19 @@ class Review(Base, BaseModels):
                         .options(joinedload(cls.doctor_a)) \
                         .options(joinedload(cls.price_list_a)) \
                         .order_by(cls.date_of_creation).all())
+
+    @classmethod
+    def search_pdf(cls, id):
+        payments = db.query(cls)
+
+        if id:
+            payments = payments.filter(Review.id == id)
+
+        return payments \
+            .options(joinedload(cls.customers_a)) \
+            .options(joinedload(cls.doctor_a)) \
+            .options(joinedload(cls.price_list_a)) \
+            .order_by(cls.date_of_creation).all()
 
     @classmethod
     def get_review_unpaid(cls):

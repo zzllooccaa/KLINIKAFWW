@@ -3,7 +3,7 @@ from model import Customers, db, User
 import schemas
 
 from utils import auth_user, get_user_from_header
-from fastapi_pagination import LimitOffsetPage, Page
+from fastapi_pagination import Page
 
 import errors
 
