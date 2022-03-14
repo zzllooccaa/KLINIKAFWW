@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from examples import user_example
 from utils import auth_user, get_user_from_header
-from fastapi_pagination import LimitOffsetPage, Page
+from fastapi_pagination import  Page
 
 import errors
 
@@ -61,16 +61,11 @@ def create_user(item: schemas.RegisterUser = user_example, current_user: User = 
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
 
-@user_router.get("/users/", response_model=Page , status_code=200)
-def get_user_by_id(by_id: str = None, name: str = None, by_role: str = None, current_user: User = Depends(get_user_from_header)):
+@user_router.get("/users/", response_model=Page, status_code=200)
+def get_user_by_id(by_id: str = None, name: str = None, by_role: str = None,
+                   current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
     return User.get_search_user(by_ids=by_id, names=name, by_roles=by_role)
-
-
-# @user_router.get("/user/{user_id}", status_code=200)
-# def get_user_by_id(user_id, current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['admin'])
-#     return User.get_by_id(id=user_id)
 
 
 @user_router.patch("/user/{user_id}", status_code=200)
@@ -88,24 +83,6 @@ def edit(user_id: int, user_data: schemas.UserUpdate, current_user: User = Depen
     db.commit()
     db.refresh(user_db)
     return user_db
-
-
-# @user_router.get("/all_users", status_code=200)
-# def get_all_user(email: str = None, name: str = None,
-#                  current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['admin'])
-#     users = User.get_all_user_paginate(email=email, name=name)
-#     print(users[0].role)
-#     return users
-
-
-# @user_router.get("/{users_by_role}", status_code=200)
-# def get_user_by_role(user_by_role, current_user: User = Depends(get_user_from_header)):
-#     search_user = User.check_user_by_role(role=user_by_role)
-#     auth_user(user=current_user, roles=['admin'])
-#     if not search_user:
-#         return HTTPException(status_code=400, detail=errors.ERR_CHECK_YOUR_TYPE)
-#     return search_user
 
 
 @user_router.patch("/{user_id}", status_code=200)
