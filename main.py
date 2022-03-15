@@ -5,11 +5,14 @@ from api.customer import customer_router
 from api.pricelist import price_list_router
 from api.review import review_router
 from api.payments import payments_router
+from fastapi.staticfiles import StaticFiles
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
 app = FastAPI()
+
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 app.add_middleware(
     CORSMiddleware,
