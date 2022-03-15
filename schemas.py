@@ -92,6 +92,19 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     jmbg: Optional[str] = None
 
+class CustomerUpdate(BaseModel):
+    email: Optional[str] = None
+    name: Optional[str] = None
+    jmbg: Optional[str] = None
+    date_of_birth: Optional[str]
+    personal_medical_history: Optional[str] = None
+    family_medical_history: Optional[str] = None
+    company_name: Optional[str] = None
+    company_pib: Optional[str] = None
+    company_address: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+
 
 class CustomersSchema(BaseModel):#BaseUserSchema):
     date_of_birth: Optional[str] = None
@@ -165,12 +178,14 @@ class ReviewDocumentSchema(BaseModel):
     id: Optional[int] = None
     url: Optional[str] = None
     title: Optional[str] = None
+    review_id: Optional[int] = None
 
     class Config:
         orm_mode = True
 
 
 class NewReview(BaseModel):
+
     doctor_opinion: Optional[str] = None
     price_of_service: Optional[int] = None
     customers_id: int

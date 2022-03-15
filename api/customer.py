@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+import shutil
+import images
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, Path, File
+from fastapi_pagination import Page
+from fastapi.staticfiles import StaticFiles
+
 from model import Customers, db, User
 import schemas
 
 from utils import auth_user, get_user_from_header
-from fastapi_pagination import Page
 
 import errors
 
@@ -11,7 +15,7 @@ customer_router = APIRouter()
 
 
 @customer_router.post("/create_patient")
-def create_customer(item: schemas.AddCustomer,\
+def create_customer(item: schemas.AddCustomer, \
                     current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
     if Customers.check_customer_by_email(email=item.email):
@@ -53,22 +57,25 @@ def get_all_customer(name: str = None, byjmbg: str = None,
 def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
          current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
-    customer = Customers.get_by_id(id=edit_by_id)
+    customer = Customers.get_id(ide=edit_by_id)
     if not customer:
         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
 
     customer_d = customer_data.dict(exclude_none=True)
-    for key, value in customer_d.items():
-        setattr(customer[0], key, value)
-    db.add(customer[0])
+    Customers.edit_customer(custom_id=edit_by_id, customer_data=customer_d)
+    db.add(customer)
     db.commit()
-    db.refresh(customer[0])
+    db.refresh(customer)
     return customer
 
-# @customer_router.get("/search-customer/{customer_jmbg}")
-# def search(customer_jmbg, current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['doctor'])
-#     search_customer = Customers.get_customer_by_jmbg(jmbg=customer_jmbg)
-#     if not search_customer:
-#         return HTTPException(status_code=400, detail=errors.ERR_JMBG_NOT_EXIST)
-#     return search_customer
+
+# @customer_router.post("upload_file/{customer_id}")
+# async def post(customer_id: int, file: UploadFile = File(...)):
+#     print(file, file.filename)
+#     with open("images//" + file.filename, 'wb') as image:
+#         shutil.copyfileobj(file.file, image)
+#         return {"file_name": file.filename}
+#        content = file.read()
+        # image.write(content)
+        # image.close()
+    # return {}
