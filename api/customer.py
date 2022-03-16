@@ -3,6 +3,7 @@ import images
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, Path, File
 from fastapi_pagination import Page
 from fastapi.staticfiles import StaticFiles
+from fastapi_pagination import paginate
 
 from model import Customers, db, User
 import schemas
@@ -46,11 +47,10 @@ def create_customer(item: schemas.AddCustomer, \
 
 
 @customer_router.get("/all_customers/", response_model=Page)
-# @customer_router.get("/all_customers/ limit-offset", response_model=LimitOffsetPage)
-def get_all_customer(name: str = None, byjmbg: str = None,
+def get_all_customer(name: str = None, byid: int = None, by_jmbg: int = None,
                      current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
-    return Customers.get_search_customers(name=name, byjmbg=byjmbg)
+    return Customers.get_customer_by_name_paginate(name=name, byid=byid, by_jmbg=by_jmbg)
 
 
 @customer_router.patch("/{edit_by_id}")
@@ -69,6 +69,12 @@ def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
     return customer
 
 
+@customer_router.get("/search/{search_by_id}")
+def search(search_by_id, current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
+    return schemas.CustomersResponseSchema() \
+        .dump(Customers.get_by_id(id=search_by_id), many=False)
+
 # @customer_router.post("upload_file/{customer_id}")
 # async def post(customer_id: int, file: UploadFile = File(...)):
 #     print(file, file.filename)
@@ -76,6 +82,6 @@ def edit(edit_by_id, customer_data: schemas.CustomerUpdate,
 #         shutil.copyfileobj(file.file, image)
 #         return {"file_name": file.filename}
 #        content = file.read()
-        # image.write(content)
-        # image.close()
-    # return {}
+# image.write(content)
+# image.close()
+# return {}
