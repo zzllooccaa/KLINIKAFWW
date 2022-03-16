@@ -76,7 +76,7 @@ def edit(user_id: int, user_data: schemas.UserUpdate, current_user: User = Depen
         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
     user_data_dic = user_data.dict(exclude_none=True)
     if user_data_dic['email'] == User.email:
-        return errors
+        return HTTPException(status_code=400, detail=errors.ERR_MAIL_ALREADY_EXIST)
     user_data_dic = user_data.dict(exclude_none=True)
     User.edit_user(user_id=user_id, user_data=user_data_dic)
     db.add(user_db)

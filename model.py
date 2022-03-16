@@ -1,3 +1,5 @@
+from typing import List
+
 import simplejson
 import datetime
 from _datetime import date
@@ -226,15 +228,59 @@ class Customers(Base, BaseUser):
     #####################################################
 
     @classmethod
-    def get_review_by_name_paginate(cls, name):
-        customers = db.query(cls)
+    def get_customer_by_name_paginate(cls, name, byid, by_jmbg):
+        payments = db.query(cls)
         if name:
-            customers.join(Review, Review.id == cls.id) \
-                .filter(Customers.name.ilike('%' + name + '%')) \
-                .options(joinedload(cls.review)) \
-                .order_by(cls.date_of_creation).limit(3).all()
-            return customers
-        return db.query(Review).order_by(Review.date_of_creation).all()
+            payments = payments.filter(Customers.name.ilike('%' + name + '%'))
+        if byid:
+            payments = payments.filter(Customers.id == byid)
+        if by_jmbg:
+            payments = payments.filter(Customers.jmbg == by_jmbg)
+
+        return paginate(payments.order_by(cls.date_of_creation).all())
+
+        # if name != None:
+            #
+            #     customers = db.query(cls).join(Review, Review.id == cls.id) \
+            #                 .filter(Customers.name.ilike('%' + name + '%')) \
+            #                 .options(joinedload(cls.review)) \
+            #                 .all() \
+            #
+            #     return customers
+            # allcustomers = db.query(cls).join(Review, Review.id == cls.id)\
+            #                 .filter(Customers.id == Review.customers_id)\
+            #                 .options(joinedload(cls.review)) \
+            #                 .all()
+            # return allcustomers
+
+
+
+
+
+        # customers = db.query(cls)
+        # if name:
+        #      customers.join(Review, Review.id == cls.id) \
+        #                     .filter(Customers.name.ilike('%' + name + '%')) \
+        #                     .options(joinedload(cls.review)) \
+        #                     .order_by(cls.date_of_creation).all()
+        # return paginate(customers.limit(3).all())
+        # if byjmbg:
+        #     return paginate(customers.join(Review, Review.id == cls.id) \
+        #                     .filter(Customers.jmbg == byjmbg)
+        #                     .options(joinedload(cls.review)) \
+        #                     .order_by(cls.date_of_creation).limit(3).all())
+        # else:
+        #     return paginate(customers.join(Review, Review.id == cls.id) \
+        #                     .filter(Customers.id==Review.customers_id) \
+        #                     .options(joinedload(cls.review)) \
+        #                     .all())
+        # if byjmbg:
+        #     return customers.filter(cls.jmbg == byjmbg)\
+        #         .filter(Customers.name.ilike('%' + name + '%')) \
+        #         .options(joinedload(cls.review)) \
+        #         .order_by(cls.date_of_creation).limit(3).all()
+        #   return customers
+        #return db.query(Review).order_by(Review.date_of_creation).all()
 
     ##################################
     # CHECK CUSTOMER BY EMAIL , JMBG #
@@ -369,6 +415,9 @@ class Review(Base, BaseModels):
     customers_a = relationship('Customers', viewonly=True)
     doctor_a = relationship('User', viewonly=True, foreign_keys="Review.doctor_id")
     price_list_a = relationship('PriceList', viewonly=True, foreign_keys="Review.price_list_id")
+    documents = relationship("ReviewDocument", back_populates='review')
+
+    # primaryjoin="ReviewDocument.review_id==review.c.id")
 
     @classmethod
     def get_review_all(cls):
@@ -379,71 +428,73 @@ class Review(Base, BaseModels):
         return paginate(db.query(cls).all())
 
 
+    @classmethod
+    def search_payments(cls, name, id, paid):
+        payments = db.query(cls)
+        if name:
+            payments = payments.filter(User.name.ilike('%' + name + '%'))
+        if id:
+            payments = payments.filter(Review.id == id)
+        if paid:
+            payments = payments.filter(Review.paid == True)
+        if not paid:
+            payments = payments.filter(Review.paid == False)
 
-
-@classmethod
-def search_payments(cls, name, id, paid):
-    payments = db.query(cls)
-    if name:
-        payments = payments.filter(User.name.ilike('%' + name + '%'))
-    if id:
-        payments = payments.filter(Review.id == id)
-    if paid:
-        payments = payments.filter(Review.paid == True)
-    if not paid:
-        payments = payments.filter(Review.paid == False)
-
-    return paginate(payments \
+        return paginate(payments \
                     .options(joinedload(cls.customers_a)) \
                     .options(joinedload(cls.doctor_a)) \
                     .options(joinedload(cls.price_list_a)) \
                     .order_by(cls.date_of_creation).all())
 
 
-@classmethod
-def search_pdf(cls, id):
-    payments = db.query(cls)
-
-    if id:
-        payments = payments.filter(Review.id == id)
-
-    return payments \
-        .options(joinedload(cls.customers_a)) \
-        .options(joinedload(cls.doctor_a)) \
-        .options(joinedload(cls.price_list_a)) \
-        .order_by(cls.date_of_creation).all()
-
-
-@classmethod
-def get_review_unpaid(cls):
-    return db.query(cls).filter(~cls.paid) \
-        .options(joinedload(cls.customers_a)) \
-        .options(joinedload(cls.doctor_a)) \
-        .options(joinedload(cls.price_list_a)) \
-        .order_by(cls.date_of_creation).all()
-
-
-@classmethod
-def get_review_paid(cls):
-    return db.query(cls).filter(cls.paid) \
-        .options(joinedload(cls.customers_a)) \
-        .options(joinedload(cls.doctor_a)) \
-        .options(joinedload(cls.price_list_a)) \
-        .order_by(cls.date_of_creation).all()
+# @classmethod
+# def search_pdf(cls, id):
+#     payments = db.query(cls)
+#
+#     if id:
+#         payments = payments.filter(Review.id == id)
+#
+#     return payments \
+#         .options(joinedload(cls.customers_a)) \
+#         .options(joinedload(cls.doctor_a)) \
+#         .options(joinedload(cls.price_list_a)) \
+#         .order_by(cls.date_of_creation).all()
+#
+#
+# @classmethod
+# def get_review_unpaid(cls):
+#     return db.query(cls).filter(~cls.paid) \
+#         .options(joinedload(cls.customers_a)) \
+#         .options(joinedload(cls.doctor_a)) \
+#         .options(joinedload(cls.price_list_a)) \
+#         .order_by(cls.date_of_creation).all()
+#
+#
+# @classmethod
+# def get_review_paid(cls):
+#     return db.query(cls).filter(cls.paid) \
+#         .options(joinedload(cls.customers_a)) \
+#         .options(joinedload(cls.doctor_a)) \
+#         .options(joinedload(cls.price_list_a)) \
+#         .order_by(cls.date_of_creation).all()
 
 
 class ReviewDocument(Base, BaseModels):
     __tablename__ = 'review_document'
 
+    title: str
+    url: str
+
     url = Column(String)
     title = Column(String)
-    review_id = Column(Integer)
+    review_id = Column(Integer, ForeignKey('review.id'), nullable=False)
 
-    __mapper_args__ = {
-        'polymorphic_identity': 'review_document',
+    review = relationship("Review", back_populates='documents')
 
-    }
+    # __mapper_args__ = {
+    #     'polymorphic_identity': 'review_document',
+    # }
 
     @classmethod
-    def get_review_by_id(cls, id):
-        return db.query(cls).filter(cls.review_id == id).all()
+    def get_review_by_id(cls, byid):
+        return db.query(cls).filter(cls.review_id == byid).all()

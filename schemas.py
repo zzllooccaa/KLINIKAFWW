@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 from enum import Enum
 from _datetime import datetime, date
+import model
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 
 T = TypeVar('T')
 
@@ -14,21 +16,6 @@ class UserId(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
-
-
-class CustomerUpdate(BaseModel):
-    email: Optional[str] = None
-    date_of_birth: Optional[str] = None
-    personal_medical_history: Optional[str] = None
-    family_medical_history: Optional[str] = None
-    company_name: Optional[str] = None
-    company_pib: Optional[str] = None
-    company_address: Optional[str] = None
-    name: Optional[str] = None
-    surname: Optional[str] = None
-    jmbg: Optional[str] = None
-    address: Optional[str] = None
-    phone: Optional[str] = None
 
 
 class RegisterUser(UserLogin):
@@ -92,6 +79,7 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     jmbg: Optional[str] = None
 
+
 class CustomerUpdate(BaseModel):
     email: Optional[str] = None
     name: Optional[str] = None
@@ -106,7 +94,7 @@ class CustomerUpdate(BaseModel):
     phone: Optional[str] = None
 
 
-class CustomersSchema(BaseModel):#BaseUserSchema):
+class CustomersSchema(BaseModel):  # BaseUserSchema):
     date_of_birth: Optional[str] = None
     personal_medical_history: Optional[str] = None
     family_medical_history: Optional[str] = None
@@ -185,7 +173,6 @@ class ReviewDocumentSchema(BaseModel):
 
 
 class NewReview(BaseModel):
-
     doctor_opinion: Optional[str] = None
     price_of_service: Optional[int] = None
     customers_id: int
@@ -222,4 +209,31 @@ class UserRead(BaseUserSchema):
     id: int
 
 
+###################
+# RESPONSE SCHEMA #
+###################
+class ReviewDocumentResponseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = model.ReviewDocument
 
+
+class CustomersResponseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = model.Customers
+
+
+class ReviewResponseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = model.Review
+
+    documents = fields.Nested(ReviewDocumentResponseSchema, many=True)
+    customers_a = fields.Nested(CustomersResponseSchema, many=False)
+
+
+class ReviewCustomersResponseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = model.Customers
+
+    # documents = fields.Nested(ReviewDocumentResponseSchema, many=True)
+    #customers_a = fields.Nested(CustomersResponseSchema)
+    review = fields.Nested(ReviewResponseSchema, many=True)

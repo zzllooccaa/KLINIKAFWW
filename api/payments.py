@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_pagination import Page
 
 import schemas
 from model import db, Review, User
@@ -10,13 +11,12 @@ from fpdf import FPDF
 import errors
 import datetime
 
-from fastapi_pagination import Page
 
 payments_router = APIRouter()
 
 
-@payments_router.patch("/create/{review_id}")
-def create_payment(review_id, item: schemas.NewPayments = payments_example,
+@payments_router.patch("/{review_id}")
+def create_payment(review_id, item: schemas.NewPayments,
                    current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['finance'])
     review_check = Review.get_by_id(id=review_id)
@@ -48,13 +48,13 @@ def get_all_payments(item: str = None, byid: int = None, paid: bool = None,
     return review_check
 
 
-@payments_router.get("/create_pdf")
+@payments_router.get("/create_invoice")
 def get_create_pdf(byid: int = None, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['finance'])
 
     doc = Review.get_by_id(id=byid)
     if not doc:
-        return errors.ERR_ID_NOT_EXIST
+        return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
 
     class PDF(FPDF):
         def header(self):

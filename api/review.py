@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, responses
 import model
-from deta import Drive
-import schemas
-import images
+from fastapi.responses import FileResponse
+
 import shutil
-from fastapi.staticfiles import StaticFiles
 
-
+import schemas
 from model import Review, db, Customers, User, ReviewDocument
 from utils import auth_user, get_user_from_header
 
@@ -15,12 +13,10 @@ import errors
 from typing import Optional
 
 review_router = APIRouter()
-#files = Drive("images")
-
 
 
 @review_router.post("/create")
-def create_review(file: Optional[UploadFile] = File(...),
+def create_review(file: Optional[UploadFile] = File(None),
                   customer_id: int = Form(...),
                   price_list_id: int = Form(...),
                   doctor_opinion: Optional[str] = Form(None),
@@ -71,24 +67,34 @@ def create_review(file: Optional[UploadFile] = File(...),
 
     db.commit()
     db.refresh()
-    return review  # ovde treba ubaciti upload file-a pa tek nakon toga return
+    return review
 
 
-# @review_router.get("/get_all_review2")
-# def get_all_review(current_user: User = Depends(get_user_from_header)):
-# auth_user(user=current_user, roles=['doctor'])
-# return Review.get_review_all()
-
-
-@review_router.get("/all_review_review")
-def get_review_all_customer(name: str = None, current_user: User = Depends(get_user_from_header)):
-    auth_user(user=current_user, roles=['doctor'])
-    return Customers.get_review_by_name_paginate(name=name)
+# @review_router.get("/all_review_review")
+# def get_review_all_customer(name: str = None, current_user: User = Depends(get_user_from_header)):
+#     auth_user(user=current_user, roles=['doctor'])
+#     return Customers.get_review_by_name_paginate(name=name)
 
 
 @review_router.get("/{review_id}")
 def get_file_of_review(rev_id, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
-    review = Review.get_by_id(id=rev_id)
-    setattr(review, 'documents', ReviewDocument.get_review_by_id(id=rev_id))  # review.documents
-    return review
+    return schemas.ReviewResponseSchema().dump(Review.get_by_id(id=rev_id), many=False)
+
+
+@review_router.get("/customer/{customer_id}")
+def get_review_by_customer(cus_id, current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
+    return schemas.ReviewCustomersResponseSchema().dump(Customers.get_by_id(id=cus_id), many=False)
+
+
+# Download review by id
+# Get review-s by customer
+# Get customer by id  uradjeno
+# Get payment by id uradjeno
+# Prepravi create payment da radi sa POST ne bi trebalo post jer dodaje 3 stavke u postojecu kolonu i da nema /create u url-u - Uradjeno
+
+@review_router.get("/download/{name_file}")
+def download_file(name_file: str, current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['doctor'])
+    return FileResponse(path="images" + "/" + name_file, media_type='application/octet-stream', filename=name_file)
