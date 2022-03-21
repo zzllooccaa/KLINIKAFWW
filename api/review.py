@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, responses
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
 import model
 from fastapi.responses import FileResponse
 
@@ -48,11 +48,11 @@ def create_review(file: Optional[UploadFile] = File(None),
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
     if file:
-        with open("images/" + file.filename, 'wb') as image:
+        with open("/home/fww1/PycharmProjects/pythonProject/clinic45/static/images/" + file.filename, 'wb') as image:
             shutil.copyfileobj(file.file, image)
             try:
                 review_document = ReviewDocument(
-                    url=("images/" + file.filename),
+                    url=("/home/fww1/PycharmProjects/pythonProject/clinic45/static/images/" + file.filename),
                     title=file.filename,
                     review_id=review.id
 
@@ -66,7 +66,6 @@ def create_review(file: Optional[UploadFile] = File(None),
                 return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
     db.commit()
-    db.refresh()
     return review
 
 
@@ -88,13 +87,9 @@ def get_review_by_customer(cus_id, current_user: User = Depends(get_user_from_he
     return schemas.ReviewCustomersResponseSchema().dump(Customers.get_by_id(id=cus_id), many=False)
 
 
-# Download review by id
-# Get review-s by customer
-# Get customer by id  uradjeno
-# Get payment by id uradjeno
-# Prepravi create payment da radi sa POST ne bi trebalo post jer dodaje 3 stavke u postojecu kolonu i da nema /create u url-u - Uradjeno
-
 @review_router.get("/download/{name_file}")
 def download_file(name_file: str, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
-    return FileResponse(path="images" + "/" + name_file, media_type='application/octet-stream', filename=name_file)
+    return FileResponse\
+        (path="/home/fww1/PycharmProjects/pythonProject/clinic45/static/images" + "/" + name_file,\
+         media_type='application/octet-stream', filename=name_file)

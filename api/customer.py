@@ -1,9 +1,6 @@
-import shutil
-import images
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, Path, File
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import Page
-from fastapi.staticfiles import StaticFiles
-from fastapi_pagination import paginate
+
 
 from model import Customers, db, User
 import schemas
@@ -16,7 +13,7 @@ customer_router = APIRouter()
 
 
 @customer_router.post("/create_patient")
-def create_customer(item: schemas.AddCustomer, \
+def create_customer(item: schemas.AddCustomer,
                     current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
     if Customers.check_customer_by_email(email=item.email):
@@ -47,10 +44,10 @@ def create_customer(item: schemas.AddCustomer, \
 
 
 @customer_router.get("/all_customers/", response_model=Page)
-def get_all_customer(name: str = None, byid: int = None, by_jmbg: int = None,
+def get_all_customer(name: str = None, byid: int = None, by_jmbg: str = None,
                      current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
-    return Customers.get_customer_by_name_paginate(name=name, byid=byid, by_jmbg=by_jmbg)
+    return Customers.get_customer_by_name_paginate(name=name, byid=byid, byjmbg=by_jmbg)
 
 
 @customer_router.patch("/{edit_by_id}")
@@ -74,14 +71,3 @@ def search(search_by_id, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
     return schemas.CustomersResponseSchema() \
         .dump(Customers.get_by_id(id=search_by_id), many=False)
-
-# @customer_router.post("upload_file/{customer_id}")
-# async def post(customer_id: int, file: UploadFile = File(...)):
-#     print(file, file.filename)
-#     with open("images//" + file.filename, 'wb') as image:
-#         shutil.copyfileobj(file.file, image)
-#         return {"file_name": file.filename}
-#        content = file.read()
-# image.write(content)
-# image.close()
-# return {}

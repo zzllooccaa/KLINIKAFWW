@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException
 from model import User, db
 import schemas
@@ -5,7 +7,7 @@ from uuid import uuid4
 
 from examples import user_example
 from utils import auth_user, get_user_from_header
-from fastapi_pagination import  Page
+from fastapi_pagination import Page
 
 import errors
 
@@ -39,8 +41,8 @@ def del_session(current_user: User = Depends(get_user_from_header)):
 def create_user(item: schemas.RegisterUser = user_example, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
     if User.check_user_by_email(email=item.email):
-        return HTTPException(status_code=400, detail=errors.ERR_USER_ALREADY_EXIST)
-    if User.check_user_by_jmbg(email=item.jmbg):
+        return HTTPException(status_code=400, detail=errors.ERR_MAIL_ALREADY_EXIST)
+    if User.check_user_by_jmbg(jmbg=item.jmbg):
         return HTTPException(status_code=400, detail=errors.ERR_USER_JMBG_ALREADY_EXIST)
 
     try:
@@ -49,7 +51,9 @@ def create_user(item: schemas.RegisterUser = user_example, current_user: User = 
             password=item.password,
             name=item.name,
             role=item.role,
-            jmbg=item.jmbg
+            jmbg=item.jmbg,
+            phone=item.phone,
+            address=item.address
         )
         db.add(user)
         db.commit()
@@ -96,3 +100,12 @@ def delete_user(user_id, current_user: User = Depends(get_user_from_header)):
     db.commit()
 
     return {}
+
+
+
+
+# @user_router.get('/send-email/asynchronous')
+# async def send_email_asynchronous():
+#     await send_email_async('Hello World','87zloc@gmail.com',
+#     {'title': 'Hello World', 'name': 'John Doe'})
+#     return 'Success'
