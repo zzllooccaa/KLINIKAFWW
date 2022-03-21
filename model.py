@@ -1,11 +1,11 @@
-from typing import List
-
 import simplejson
+import os
 import datetime
 from _datetime import date
 import enum
 from json import JSONEncoder
 from fastapi_pagination import paginate
+from dotenv import load_dotenv
 
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Enum
 from sqlalchemy import create_engine
@@ -15,8 +15,6 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from dataclasses import dataclass
 
-import errors
-
 DATABASE_URL = "postgresql://postgres:myPassword@localhost:5432/Clinic22"
 
 engine = create_engine(
@@ -25,6 +23,8 @@ engine = create_engine(
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 db = SessionLocal()
 Base = declarative_base()
+
+load_dotenv('.env')
 
 
 ########################################################
@@ -113,8 +113,7 @@ class User(Base, BaseUser, JSONEncoder):
     session_id = Column(String(100))
     jmbg = Column(String, unique=True)
     deleted = Column(Boolean, default=False)
-
-    # reviews = relationship('Review', foreign_keys="User.reviews")
+    hashed_password = Column(String(150))
 
     ########################
     # GET REVIEW BY DOCTOR #
@@ -138,19 +137,31 @@ class User(Base, BaseUser, JSONEncoder):
             .filter(cls.email == email, cls.password == password, ~cls.deleted) \
             .first()
 
+    @classmethod
+    def get_user_by_email(cls, email):
+        return db.query(cls) \
+            .filter(cls.email == email, ~cls.deleted) \
+            .first()
+
+    @classmethod
+    def get_user_recover(cls, hashed_password):
+        return db.query(cls) \
+            .filter(cls.hashed_password == hashed_password, ~cls.deleted) \
+            .first()
+
     #################################################
     # GET ALL USER SEARCHED BY EMAIL,NAME & SURNAME #
     #################################################
 
-    @classmethod
-    def get_all_user_paginate(cls, email, name):
-        users = db.query(cls).filter(~cls.deleted)
-        if email:
-            users = users.filter(cls.email == email, ~User.deleted)
-        if name:
-            users = users.filter(cls.name == name, ~User.deleted)
-
-        return users.all()
+    # @classmethod
+    # def get_all_user_paginate(cls, email, name):
+    #     users = db.query(cls).filter(~cls.deleted)
+    #     if email:
+    #         users = users.filter(cls.email == email, ~User.deleted)
+    #     if name:
+    #         users = users.filter(cls.name == name, ~User.deleted)
+    #
+    #     return users.all()
 
     #########################################
     # CHECK USER BY EMAIL , JMBG & AND ROLE #
@@ -164,9 +175,6 @@ class User(Base, BaseUser, JSONEncoder):
     def check_user_by_jmbg(cls, jmbg):
         return db.query(cls).filter(cls.jmbg == jmbg, ~User.deleted).first()
 
-    @classmethod
-    def check_user_by_role(cls, role):
-        return db.query(cls).filter(cls.role == role, ~cls.deleted).all()
 
     ##################
     # UPDATE METHODS #
@@ -174,6 +182,11 @@ class User(Base, BaseUser, JSONEncoder):
     @classmethod
     def edit_user(cls, user_id, user_data):
         db.query(cls).filter(cls.id == user_id, ~cls.deleted) \
+            .update(user_data, synchronize_session=False)
+
+    @classmethod
+    def forgot_user(cls, email, user_data):
+        db.query(cls).filter(cls.email == email, ~cls.deleted) \
             .update(user_data, synchronize_session=False)
 
     ##################
@@ -191,9 +204,6 @@ class User(Base, BaseUser, JSONEncoder):
 
         return paginate(users.order_by(cls.date_of_creation).all())
 
-    @classmethod
-    def get_user_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id, ~cls.deleted).all()
 
 
 class Customers(Base, BaseUser):
@@ -223,92 +233,39 @@ class Customers(Base, BaseUser):
 
     review = relationship('Review')
 
-    #####################################################
-    # JOIN VRACA CUSTOMERU POSLEDNJA 3 PREGLEDA BY NAME #
-    #####################################################
+    ###################################
+    # GET CUSTOMER BY NAME ID OR JMBG #
+    ###################################
 
     @classmethod
-    def get_customer_by_name_paginate(cls, name, byid, by_jmbg):
-        payments = db.query(cls)
+    def get_customer_by_name_paginate(cls, name, byid, byjmbg):
+        customs = db.query(cls)
         if name:
-            payments = payments.filter(Customers.name.ilike('%' + name + '%'))
+            return paginate(customs.filter(Customers.name.ilike('%' + name + '%')).all())
         if byid:
-            payments = payments.filter(Customers.id == byid)
-        if by_jmbg:
-            payments = payments.filter(Customers.jmbg == by_jmbg)
+            return paginate(customs.filter(Customers.id == byid).all())
+        if byjmbg:
+            return paginate(customs.filter(Customers.jmbg == byjmbg).all())
 
-        return paginate(payments.order_by(cls.date_of_creation).all())
+        return paginate(customs.all())
 
-        # if name != None:
-            #
-            #     customers = db.query(cls).join(Review, Review.id == cls.id) \
-            #                 .filter(Customers.name.ilike('%' + name + '%')) \
-            #                 .options(joinedload(cls.review)) \
-            #                 .all() \
-            #
-            #     return customers
-            # allcustomers = db.query(cls).join(Review, Review.id == cls.id)\
-            #                 .filter(Customers.id == Review.customers_id)\
-            #                 .options(joinedload(cls.review)) \
-            #                 .all()
-            # return allcustomers
-
-
-
-
-
-        # customers = db.query(cls)
-        # if name:
-        #      customers.join(Review, Review.id == cls.id) \
-        #                     .filter(Customers.name.ilike('%' + name + '%')) \
-        #                     .options(joinedload(cls.review)) \
-        #                     .order_by(cls.date_of_creation).all()
-        # return paginate(customers.limit(3).all())
-        # if byjmbg:
-        #     return paginate(customers.join(Review, Review.id == cls.id) \
-        #                     .filter(Customers.jmbg == byjmbg)
-        #                     .options(joinedload(cls.review)) \
-        #                     .order_by(cls.date_of_creation).limit(3).all())
-        # else:
-        #     return paginate(customers.join(Review, Review.id == cls.id) \
-        #                     .filter(Customers.id==Review.customers_id) \
-        #                     .options(joinedload(cls.review)) \
-        #                     .all())
-        # if byjmbg:
-        #     return customers.filter(cls.jmbg == byjmbg)\
-        #         .filter(Customers.name.ilike('%' + name + '%')) \
-        #         .options(joinedload(cls.review)) \
-        #         .order_by(cls.date_of_creation).limit(3).all()
-        #   return customers
-        #return db.query(Review).order_by(Review.date_of_creation).all()
-
-    ##################################
-    # CHECK CUSTOMER BY EMAIL , JMBG #
-    ##################################
+    ###########################
+    # CHECK CUSTOMER BY EMAIL #
+    ###########################
     @classmethod
     def check_customer_by_email(cls, email):
         return db.query(cls).filter(cls.email == email, cls.email != None).first()
 
-    @classmethod
-    def get_search_customers(cls, name, byjmbg):
-        payments = db.query(cls)
-        if name:
-            payments = payments.filter(User.name.ilike('%' + name + '%'))
-        if byjmbg:
-            payments = payments.filter(cls.jmbg == byjmbg)
-        return paginate(payments.all())
+
+    #######################
+    # EDIT CUSTOMER BY ID #
+    #######################
 
     @classmethod
     def edit_customer(cls, custom_id, customer_data):
         db.query(cls).filter(cls.id == custom_id) \
             .update(customer_data, synchronize_session=False)
 
-
-#
-#
-# @classmethod
-# def check_customer_by_jmbg(cls, jmbg):
-#     return db.query(cls).filter(cls.jmbg == jmbg, cls.jmbg != None).first()
 
 
 ########################
@@ -359,15 +316,15 @@ class PriceList(Base, BaseModels):
     # CHECK PRICE BY SERVICES #
     ###########################
 
-    @classmethod
-    def check_price_list_by_services(cls, services):
-        return db.query(cls) \
-            .filter(cls.services == services, cls.date_of_end == None) \
-            .first()
+    # @classmethod
+    # def check_price_list_by_services(cls, services):
+    #     return db.query(cls) \
+    #         .filter(cls.services == services, cls.date_of_end == None) \
+    #         .first()
 
-    ###################
-    # GET ALL PRICE'S #
-    ###################
+    ###############################################
+    # GET ALL PRICE'S AND SEARCH BY MODEL OR TYPE #
+    ###############################################
 
     @classmethod
     def get_all_price(cls, services, medical_service):
@@ -389,9 +346,9 @@ class PriceList(Base, BaseModels):
             .filter(cls.id == price_list_id, cls.date_of_end == None) \
             .update(pricelist_data, synchronize_session=False)
 
-    @classmethod
-    def delete_by_id(cls, id):
-        return db.query(cls).filter(cls.id == id).all()
+    # @classmethod
+    # def delete_by_id(cls, id):
+    #     return db.query(cls).filter(cls.id == id).all()
 
 
 class Review(Base, BaseModels):
@@ -419,14 +376,17 @@ class Review(Base, BaseModels):
 
     # primaryjoin="ReviewDocument.review_id==review.c.id")
 
-    @classmethod
-    def get_review_all(cls):
-        return db.query(cls).all()
+    # @classmethod
+    # def get_review_all(cls):
+    #     return db.query(cls).all()
 
-    @classmethod
-    def get_review_paginate(cls):
-        return paginate(db.query(cls).all())
+    # @classmethod
+    # def get_review_paginate(cls):
+    #     return paginate(db.query(cls).all())
 
+    #################################################
+    # SEARCH PAYMENTS BY NAME BY ID OR PAID(UNPAID) #
+    #################################################
 
     @classmethod
     def search_payments(cls, name, id, paid):
@@ -441,10 +401,19 @@ class Review(Base, BaseModels):
             payments = payments.filter(Review.paid == False)
 
         return paginate(payments \
-                    .options(joinedload(cls.customers_a)) \
-                    .options(joinedload(cls.doctor_a)) \
-                    .options(joinedload(cls.price_list_a)) \
-                    .order_by(cls.date_of_creation).all())
+                        .options(joinedload(cls.customers_a)) \
+                        .options(joinedload(cls.doctor_a)) \
+                        .options(joinedload(cls.price_list_a)) \
+                        .order_by(cls.date_of_creation).all())
+
+    ##################
+    # CREATE PAYMENT #
+    ##################
+
+    @classmethod
+    def edit_payment(cls, review_byid, item):
+        db.query(cls).filter(cls.id == review_byid) \
+            .update(item, synchronize_session=False)
 
 
 # @classmethod
@@ -495,6 +464,9 @@ class ReviewDocument(Base, BaseModels):
     #     'polymorphic_identity': 'review_document',
     # }
 
-    @classmethod
-    def get_review_by_id(cls, byid):
-        return db.query(cls).filter(cls.review_id == byid).all()
+    # @classmethod
+    # def get_review_by_id(cls, byid):
+    #     return db.query(cls).filter(cls.review_id == byid).all()
+
+
+

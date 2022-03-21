@@ -42,7 +42,9 @@ user_example = Body(
                 "password": "Do not show your password to anyone",
                 "name": "Enter name and surname",
                 "role": "Choose role for User it can be doctor, admin or finance",
-                "jmbg": " Unique 13 digits number"
+                "jmbg": " Unique 13 digits number",
+                "address": "Address",
+                "phone": "Phone"
             }
         }
     }
@@ -73,4 +75,3 @@ customer_example = Body(
         }
     }
 )
-

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from model import PriceList, db , User
+from model import PriceList, db, User
 import schemas
 import datetime
 from helper import create_new_price
@@ -12,7 +12,8 @@ price_list_router = APIRouter()
 
 
 @price_list_router.post("/create")
-def create_price_list(item: schemas.AddPriceList = price_list_example, current_user: User = Depends(get_user_from_header)):
+def create_price_list(item: schemas.AddPriceList ,
+                      current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
 
     try:
@@ -25,13 +26,15 @@ def create_price_list(item: schemas.AddPriceList = price_list_example, current_u
 
 
 @price_list_router.get("/all_prices")
-def get_all_price(services: str = None, medical_service: str = None, current_user: User = Depends(get_user_from_header)):
-    auth_user(user=current_user, roles=['admin'])
+def get_all_price(services: str = None, medical_service: str = None,
+                  current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['admin', 'doctor'])
     return PriceList.get_all_price(services=services, medical_service=medical_service, )  # Todo dateofendd=null
 
 
 @price_list_router.patch("/edit/{pricelist_id}")
-def edit_price(price_list_id, pricelist_data: schemas.PriceListSchema, current_user: User = Depends(get_user_from_header)):
+def edit_price(price_list_id, pricelist_data: schemas.PriceListSchema,
+               current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
     price_list = PriceList.get_by_id(id=price_list_id)
     if not price_list:
@@ -59,10 +62,9 @@ def edit_price(price_list_id, pricelist_data: schemas.PriceListSchema, current_u
 @price_list_router.patch("/delete/{price_list_id}")
 def delete_price(price_list_id, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
-    price = PriceList.delete_by_id(id=price_list_id)
+    price = PriceList.get_by_id(id=price_list_id)
     if not price:
         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
-    price = price[0]
     price.date_of_end = datetime.datetime.now()
     db.add(price)
     db.commit()

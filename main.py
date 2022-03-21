@@ -10,10 +10,12 @@ from api.customer import customer_router
 from api.pricelist import price_list_router
 from api.review import review_router
 from api.payments import payments_router
+from api.forgot_password import forgot_password_router
+from api.gmail import gmail_router
 
 app = FastAPI()
 
-app.mount("/images", StaticFiles(directory="images"), name="images")
+app.mount("/static/images", StaticFiles(directory="images"), name="images")
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,6 +54,19 @@ app.include_router(
     prefix="/payments",
     tags=["payments"],
 )
+
+app.include_router(
+    forgot_password_router,
+    prefix="/forgot_password",
+    tags=["forgot_password"],
+)
+
+app.include_router(
+    gmail_router,
+    prefix="/gmail",
+    tags=["gmail"],
+)
+
 
 add_pagination(app)
 if __name__ == "__main__":
