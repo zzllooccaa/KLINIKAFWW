@@ -26,7 +26,7 @@ class UserLogin(BaseModel):
     password: str
 
 
-class RegisterUser(BaseModel):
+class RegisterUser(UserLogin):
     name: str
     role: str
     jmbg: str
@@ -81,10 +81,16 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     name: Optional[str] = None
-    role: Optional[str]
+    role: Optional[str] = None
     jmbg: Optional[str]
     phone: Optional[str]
     address: Optional[str]
+
+
+
+class ChangePassword(BaseModel):
+    password: str
+    retype_password: str
 
 
 class CustomerUpdate(BaseModel):
@@ -266,4 +272,8 @@ class EmailSchema(BaseModel):
     email: List[EmailStr]
 
 
+class PasswordChange(BaseModel):
+    name: str
+    email: str
 
+body:str

@@ -4,7 +4,7 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from pprint import pprint
 
-with open("/home/fww1/PycharmProjects/pythonProject/clinic45/static/requirements/user_mail.txt", "r") as mail_user:
+with open("/temp/user_mail.txt", "r") as mail_user:
     mail = mail_user.read()
 
 configuration = sib_api_v3_sdk.Configuration()
