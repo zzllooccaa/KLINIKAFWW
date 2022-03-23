@@ -75,15 +75,17 @@ def get_user_by_id(by_id: str = None, name: str = None, by_role: str = None,
 @user_router.patch("/user/{user_id}", status_code=200)
 def edit(user_id: int, user_data: schemas.UserUpdate, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['admin'])
+
     user_db = User.get_by_id(id=user_id)
     if not user_db:
         return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
     user_data_dic = user_data.dict(exclude_none=True)
     if user_data_dic['email'] == User.email:
         return HTTPException(status_code=400, detail=errors.ERR_MAIL_ALREADY_EXIST)
-    user_data_dic = user_data.dict(exclude_none=True)
+    print('AAAAAAAA', user_data)
     User.edit_user(user_id=user_id, user_data=user_data_dic)
-    db.add(user_db)
+    # db.add(user_db)
+
     db.commit()
     db.refresh(user_db)
     return user_db
@@ -102,10 +104,18 @@ def delete_user(user_id, current_user: User = Depends(get_user_from_header)):
     return {}
 
 
+@user_router.post("/change_password", status_code=200)
+def change_password(user_pass: schemas.ChangePassword, current_user: User = Depends(get_user_from_header)):
+    auth_user(user=current_user, roles=['admin', 'doctor', 'finance'])
+    user_auth = User.get_user_by_email(email=current_user.email)
+    if not user_auth:
+        return HTTPException(status_code=400, detail=errors.ERR_ID_NOT_EXIST)
+    if user_pass.password != user_pass.retype_password:
+        return HTTPException(status_code=400, detail=errors.ERR_PASSWORD_RETYPE)
+    user_auth.password = user_pass.password
+    db.add(user_auth)
+    db.commit()
+    return user_auth
 
 
-# @user_router.get('/send-email/asynchronous')
-# async def send_email_asynchronous():
-#     await send_email_async('Hello World','87zloc@gmail.com',
-#     {'title': 'Hello World', 'name': 'John Doe'})
-#     return 'Success'
+

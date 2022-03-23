@@ -64,16 +64,12 @@ class BaseModels(object):
     @classmethod
     def get_by_id(cls, id):
         return db.query(cls) \
-            .filter(cls.id == id, ~User.deleted, PriceList.date_of_end == None) \
+            .filter(cls.id == id) \
             .first()
 
     @classmethod
     def get_id(cls, ide):
         return db.query(cls).filter(cls.id == ide).first()
-
-    @classmethod
-    def get_by_session_id(cls, session_id):
-        return db.query(cls).filter(User.session_id == session_id, ~User.deleted).first()
 
 
 class BaseUser(BaseModels):
@@ -132,6 +128,10 @@ class User(Base, BaseUser, JSONEncoder):
     ################################
 
     @classmethod
+    def get_by_session_id(cls, session_id):
+        return db.query(cls).filter(cls.session_id == session_id, ~cls.deleted).first()
+
+    @classmethod
     def get_user_by_email_and_password(cls, email, password):
         return db.query(cls) \
             .filter(cls.email == email, cls.password == password, ~cls.deleted) \
@@ -181,7 +181,8 @@ class User(Base, BaseUser, JSONEncoder):
     ##################
     @classmethod
     def edit_user(cls, user_id, user_data):
-        db.query(cls).filter(cls.id == user_id, ~cls.deleted) \
+        print('USER DATA', user_data)
+        return db.query(cls).filter(cls.id == user_id, ~cls.deleted) \
             .update(user_data, synchronize_session=False)
 
     @classmethod
