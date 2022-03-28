@@ -4,11 +4,13 @@ from fastapi.responses import FileResponse
 
 import schemas
 from model import db, Review, User
+from config import path_doc, path_req
 
 from utils import auth_user, get_user_from_header
 from fpdf import FPDF
 import errors
 import datetime
+
 
 payments_router = APIRouter()
 
@@ -35,8 +37,8 @@ def create_payment(review_id, item: schemas.NewPayments,
 def get_all_payments(item: str = None, by_id: int = None, paid: bool = None,
                      current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['finance'])
-    review_check = Review.search_payments(name=item, id=by_id, paid=paid)
-    return review_check
+    review_checks = Review.search_payments(name=item, id=by_id, paid=paid)
+    return review_checks
 
 
 @payments_router.get("/download/{create_by_id}")
@@ -112,12 +114,12 @@ def get_create_pdf(by_id: int = None, current_user: User = Depends(get_user_from
     pdf.set_font('helvetica', 'B', 6)
     pdf.cell(35, 5, 'date of service')
     pdf.cell(15, 5, str(doc.date_of_creation), ln=True)
-    pdf.image(name='/home/fww1/PycharmProjects/pythonProject/clinic45/static/requirements/klinika.jpeg', x=170, y=0, w=40, h=30, type='JPEG', link='pdf.add_link()')
+    pdf.image(name=path_req + "/" + 'klinika.jpeg', x=170, y=0, w=40, h=30, type='JPEG', link='pdf.add_link()')
     pdf.set_font('helvetica', 'B', 6)
     pdf.cell(0, 10, 'email: klinika@finance.com')
 
-    pdf.output('/home/fww1/PycharmProjects/pythonProject/clinic45/static/document/invoice.pdf')
+    pdf.output(path_doc + f'/invoice.pdf')
     name_file = 'invoice.pdf'
     print(name_file)
 
-    return FileResponse(path='/home/fww1/PycharmProjects/pythonProject/clinic45/static/document/invoice.pdf', media_type='application/octet-stream', filename=name_file)
+    return FileResponse(path=path_doc + "/" + 'invoice.pdf', media_type='application/octet-stream', filename=name_file)

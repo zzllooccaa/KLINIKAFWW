@@ -9,6 +9,7 @@ from utils import auth_user, get_user_from_header
 
 import errors
 
+
 customer_router = APIRouter()
 
 

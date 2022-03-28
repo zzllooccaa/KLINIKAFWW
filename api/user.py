@@ -1,9 +1,10 @@
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException
+import logging
+
 from model import User, db
 import schemas
 from uuid import uuid4
+import time
 
 from examples import user_example
 from utils import auth_user, get_user_from_header
@@ -24,6 +25,7 @@ def _update_user_session(user, session_id):
 
 @user_router.post("/login")
 async def login(item: schemas.UserLogin):
+    logging.warning("login function")
     user = User.get_user_by_email_and_password(email=item.email, password=item.password)
     if not user:
         raise HTTPException(status_code=400, detail=errors.WRONG_CREDENTIALS)
@@ -33,6 +35,7 @@ async def login(item: schemas.UserLogin):
 
 @user_router.put('/logout')
 def del_session(current_user: User = Depends(get_user_from_header)):
+    logging.warning('logout function')
     _update_user_session(user=current_user, session_id=None)
     return {}
 
@@ -82,9 +85,7 @@ def edit(user_id: int, user_data: schemas.UserUpdate, current_user: User = Depen
     user_data_dic = user_data.dict(exclude_none=True)
     if user_data_dic['email'] == User.email:
         return HTTPException(status_code=400, detail=errors.ERR_MAIL_ALREADY_EXIST)
-    print('AAAAAAAA', user_data)
     User.edit_user(user_id=user_id, user_data=user_data_dic)
-    # db.add(user_db)
 
     db.commit()
     db.refresh(user_db)
@@ -116,6 +117,5 @@ def change_password(user_pass: schemas.ChangePassword, current_user: User = Depe
     db.add(user_auth)
     db.commit()
     return user_auth
-
 
 

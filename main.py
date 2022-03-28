@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
+import logging
 import uvicorn
 
 from api.user import user_router
@@ -11,11 +12,14 @@ from api.pricelist import price_list_router
 from api.review import review_router
 from api.payments import payments_router
 from api.forgot_password import forgot_password_router
+from api.logger import logger
+from api.logger import init_logging
 
+init_logging()
 
 app = FastAPI()
 
-app.mount("/static/images", StaticFiles(directory="images"), name="images")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -62,5 +66,24 @@ app.include_router(
 )
 
 add_pagination(app)
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    import time
+    logging.basicConfig(filename='example.log', filemode='w', level=logging.DEBUG)
+    start_time = time.time()
+
+    # Call function
+    response = await call_next(request)
+
+    process_time = time.time() - start_time
+    logger.info(process_time)
+
+    logging.getLogger("fastapi").debug("Start")
+    # logger.bind(payload=(request.url)).info("URL")
+    return response
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
