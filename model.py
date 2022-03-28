@@ -359,6 +359,7 @@ class Review(Base, BaseModels):
     review_id: int
     url: str
     id: int
+    date_of_creation_payment: date
 
     customers_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
     doctor_id = Column(Integer, ForeignKey('user.id'), nullable=False)

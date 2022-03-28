@@ -8,6 +8,8 @@ import model
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 from pydantic import EmailStr, BaseModel
 from typing import List
+from datetime import date
+
 
 T = TypeVar('T')
 
@@ -164,7 +166,7 @@ class PaymentSchema(BaseModel):
     doctor_opinion: str
     paid: Optional[bool]
     payment_made: Optional[Enum]
-    date_of_creation: datetime
+    date_of_creation: date
     finance_id: Optional[int]
     doctor_a: BaseUserSchema
     customer_a: CustomersSchema
@@ -277,3 +279,10 @@ class PasswordChange(BaseModel):
     email: str
 
 body:str
+
+
+
+
+
+
+

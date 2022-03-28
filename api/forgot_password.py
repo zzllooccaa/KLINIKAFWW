@@ -1,9 +1,12 @@
-from model import User, db
 from fastapi import APIRouter, HTTPException, Header
+from starlette.responses import JSONResponse
+
 from uuid import uuid4
+from model import User, db
+from api.gmail import send_mail
+
 import errors
 import schemas
-from api.gmail import send_mail
 
 forgot_password_router = APIRouter()
 
@@ -13,20 +16,14 @@ async def forgot_password(item: schemas.ForgotPassword):
     user_one = User.get_user_by_email(email=item.email)
     if not user_one:
         raise HTTPException(status_code=400, detail=errors.WRONG_CREDENTIALS)
+
     user_one.hashed_password = uuid4()
     db.add(user_one)
     db.commit()
-    db.refresh(user_one)
-    data = item.email
-    a1 = open('/home/fww1/PycharmProjects/pythonProject/clinic45/temp/user_mail.txt', 'w')
-    a1.write(data)
-    a1.close()
-    data_hash = user_one.hashed_password
-    a2 = open('/home/fww1/PycharmProjects/pythonProject/clinic45/temp/hashed_password.txt', 'w')
-    a2.write(data_hash)
-    a2.close()
-    await send_mail()
-    return user_one
+
+    await send_mail(email=user_one.email, token=user_one.hashed_password)
+
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
 @forgot_password_router.patch("/recover-password")

@@ -1,16 +1,19 @@
+import datetime
+import string
+
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
-import model
+from model import Review, db, Customers, User, ReviewDocument
 from fastapi.responses import FileResponse
+from utils import auth_user, get_user_from_header
+from config import path_images
+from typing import Optional
+import random
 
 import shutil
-
+import model
 import schemas
-from model import Review, db, Customers, User, ReviewDocument
-from utils import auth_user, get_user_from_header
-
 import errors
 
-from typing import Optional
 
 review_router = APIRouter()
 
@@ -41,6 +44,7 @@ def create_review(file: Optional[UploadFile] = File(None),
         )
         db.add(review)
         db.flush()
+        db.commit()
 
     except Exception as e:
         db.rollback()
@@ -48,31 +52,31 @@ def create_review(file: Optional[UploadFile] = File(None),
         return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
     if file:
-        with open("/home/fww1/PycharmProjects/pythonProject/clinic45/static/images/" + file.filename, 'wb') as image:
+        a = random.choice(string.digits)
+        b = datetime.datetime.now()
+        c= b.strftime("%H:%M:%S") + a
+        name_hash = c + file.filename
+        #with open(path_images + f'/{file.filename}', 'wb') as image:
+        with open(path_images + f'/{name_hash}', 'wb') as image:
             shutil.copyfileobj(file.file, image)
             try:
                 review_document = ReviewDocument(
-                    url=("/home/fww1/PycharmProjects/pythonProject/clinic45/static/images/" + file.filename),
-                    title=file.filename,
+                    url=(path_images + name_hash),
+                    title=name_hash,
                     review_id=review.id
 
                 )
 
                 db.add(review_document)
-                return {"file_name": file.filename}
+                db.commit()
+                return {"file_name": name_hash}
             except Exception as e:
                 db.rollback()
                 print(e)
                 return {'ERROR': 'ERR_DUPLICATED_ENTRY'}
 
-    db.commit()
+
     return review
-
-
-# @review_router.get("/all_review_review")
-# def get_review_all_customer(name: str = None, current_user: User = Depends(get_user_from_header)):
-#     auth_user(user=current_user, roles=['doctor'])
-#     return Customers.get_review_by_name_paginate(name=name)
 
 
 @review_router.get("/{review_id}")
@@ -90,6 +94,6 @@ def get_review_by_customer(cus_id, current_user: User = Depends(get_user_from_he
 @review_router.get("/download/{name_file}")
 def download_file(name_file: str, current_user: User = Depends(get_user_from_header)):
     auth_user(user=current_user, roles=['doctor'])
-    return FileResponse\
-        (path="/home/fww1/PycharmProjects/pythonProject/clinic45/static/images" + "/" + name_file,\
+    return FileResponse \
+        (path=path_images + "/" + name_file, \
          media_type='application/octet-stream', filename=name_file)
