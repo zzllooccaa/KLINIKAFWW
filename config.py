@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import os
 
 DATABASE_URL = "postgresql://postgres:myPassword@localhost:5432/Clinic22"
-#DATABASE_URL = "postgresql://postgres:myPassword@localhost:5020/Clinic22" #docker port
+#DATABASE_URL = "postgresql://postgres:myPassword@localhost:5430/Clinic22" #docker port
 
 engine = create_engine
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

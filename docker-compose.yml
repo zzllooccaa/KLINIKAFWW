@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+    app:
+        build: ./
+        command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 8001
+        ports:
+            - "8001:8001"
+        volumes:
+                - ./src/:/usr/src/app/
+    postgresql_database:
+        image: postgres:latest
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=myPassword
+            - POSTGRES_DB=Clinic22
+        ports:
+            - "5430:5430"
+        restart: always
+        volumes:
+            - database-data:/var/lib/postgresql/data/
+
+    pgadmin:
+        image: dpage/pgadmin4
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+            - PGADMIN_DEFAULT_PASSWORD=admin1234
+        ports:
+            - '5050:80'
+        restart: always
+        volumes:
+            - pgadmin:/root/.pgadmin
+volumes:
+    database-data:
+    pgadmin:
