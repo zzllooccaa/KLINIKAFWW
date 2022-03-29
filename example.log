@@ -1,36 +1,540 @@
+DEBUG:fpdf.fpdf:Final doc sections size summary:
+DEBUG:fpdf.fpdf:- header.size: 9.0B
+DEBUG:fpdf.fpdf:- pages.size: 1.0KiB
+DEBUG:fpdf.fpdf:- resources.fonts.size: 301.0B
+DEBUG:fpdf.fpdf:- resources.images.size: 6.1KiB
+DEBUG:fpdf.fpdf:- resources.gfxstate.size: 0.0B
+DEBUG:fpdf.fpdf:- resources.dict.size: 134.0B
+DEBUG:fpdf.fpdf:- info.size: 54.0B
+DEBUG:fpdf.fpdf:- catalog.size: 104.0B
+DEBUG:fpdf.fpdf:- xref.size: 230.0B
+DEBUG:fpdf.fpdf:- trailer.size: 63.0B
 DEBUG:fastapi:Start
 DEBUG:fastapi:Start
 DEBUG:fastapi:Start
+DEBUG:fpdf.fpdf:Final doc sections size summary:
+DEBUG:fpdf.fpdf:- header.size: 9.0B
+DEBUG:fpdf.fpdf:- pages.size: 1.1KiB
+DEBUG:fpdf.fpdf:- resources.fonts.size: 301.0B
+DEBUG:fpdf.fpdf:- resources.images.size: 6.1KiB
+DEBUG:fpdf.fpdf:- resources.gfxstate.size: 0.0B
+DEBUG:fpdf.fpdf:- resources.dict.size: 134.0B
+DEBUG:fpdf.fpdf:- info.size: 54.0B
+DEBUG:fpdf.fpdf:- catalog.size: 104.0B
+DEBUG:fpdf.fpdf:- xref.size: 230.0B
+DEBUG:fpdf.fpdf:- trailer.size: 63.0B
 DEBUG:fastapi:Start
 DEBUG:fastapi:Start
+DEBUG:fpdf.fpdf:Final doc sections size summary:
+DEBUG:fpdf.fpdf:- header.size: 9.0B
+DEBUG:fpdf.fpdf:- pages.size: 1.1KiB
+DEBUG:fpdf.fpdf:- resources.fonts.size: 301.0B
+DEBUG:fpdf.fpdf:- resources.images.size: 6.1KiB
+DEBUG:fpdf.fpdf:- resources.gfxstate.size: 0.0B
+DEBUG:fpdf.fpdf:- resources.dict.size: 134.0B
+DEBUG:fpdf.fpdf:- info.size: 54.0B
+DEBUG:fpdf.fpdf:- catalog.size: 104.0B
+DEBUG:fpdf.fpdf:- xref.size: 230.0B
+DEBUG:fpdf.fpdf:- trailer.size: 63.0B
 DEBUG:fastapi:Start
+DEBUG:fpdf.fpdf:Final doc sections size summary:
+DEBUG:fpdf.fpdf:- header.size: 9.0B
+DEBUG:fpdf.fpdf:- pages.size: 1.1KiB
+DEBUG:fpdf.fpdf:- resources.fonts.size: 301.0B
+DEBUG:fpdf.fpdf:- resources.images.size: 6.1KiB
+DEBUG:fpdf.fpdf:- resources.gfxstate.size: 0.0B
+DEBUG:fpdf.fpdf:- resources.dict.size: 134.0B
+DEBUG:fpdf.fpdf:- info.size: 54.0B
+DEBUG:fpdf.fpdf:- catalog.size: 104.0B
+DEBUG:fpdf.fpdf:- xref.size: 230.0B
+DEBUG:fpdf.fpdf:- trailer.size: 63.0B
 DEBUG:fastapi:Start
+DEBUG:fpdf.fpdf:Final doc sections size summary:
+DEBUG:fpdf.fpdf:- header.size: 9.0B
+DEBUG:fpdf.fpdf:- pages.size: 1.1KiB
+DEBUG:fpdf.fpdf:- resources.fonts.size: 301.0B
+DEBUG:fpdf.fpdf:- resources.images.size: 6.1KiB
+DEBUG:fpdf.fpdf:- resources.gfxstate.size: 0.0B
+DEBUG:fpdf.fpdf:- resources.dict.size: 134.0B
+DEBUG:fpdf.fpdf:- info.size: 54.0B
+DEBUG:fpdf.fpdf:- catalog.size: 104.0B
+DEBUG:fpdf.fpdf:- xref.size: 230.0B
+DEBUG:fpdf.fpdf:- trailer.size: 63.0B
 DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
-DEBUG:fastapi:Start
+ERROR:uvicorn.error:Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 81, in receive
+    return self.receive_nowait()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 76, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 41, in call_next
+    message = await recv_stream.receive()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 101, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/protocols/http/h11_impl.py", line 366, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 75, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/applications.py", line 259, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 63, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/main.py", line 78, in add_process_time_header
+    response = await call_next(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 44, in call_next
+    raise app_exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 34, in coro
+    await self.app(scope, request.receive, send_stream.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 656, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 259, in handle
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 61, in app
+    response = await func(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 227, in app
+    raw_response = await run_endpoint_function(
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 162, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/to_thread.py", line 28, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(func, *args, cancellable=cancellable,
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 818, in run_sync_in_worker_thread
+    return await future
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 754, in run
+    result = context.run(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/api/payments.py", line 99, in get_create_pdf
+    pdf.cell(100, 5, doc.customers_a.phone)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 251, in wrapper
+    return fn(self, *args, **kwargs)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 2046, in cell
+    txt = self.normalize_text(txt)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 3085, in normalize_text
+    return txt.encode(self.core_fonts_encoding).decode("latin-1")
+AttributeError: 'NoneType' object has no attribute 'encode'
+ERROR:uvicorn.error:Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 81, in receive
+    return self.receive_nowait()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 76, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 41, in call_next
+    message = await recv_stream.receive()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 101, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/protocols/http/h11_impl.py", line 366, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 75, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/applications.py", line 259, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 63, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/main.py", line 78, in add_process_time_header
+    response = await call_next(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 44, in call_next
+    raise app_exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 34, in coro
+    await self.app(scope, request.receive, send_stream.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 656, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 259, in handle
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 61, in app
+    response = await func(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 227, in app
+    raw_response = await run_endpoint_function(
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 162, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/to_thread.py", line 28, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(func, *args, cancellable=cancellable,
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 818, in run_sync_in_worker_thread
+    return await future
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 754, in run
+    result = context.run(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/api/payments.py", line 99, in get_create_pdf
+    pdf.cell(100, 5, doc.customers_a.phone)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 251, in wrapper
+    return fn(self, *args, **kwargs)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 2046, in cell
+    txt = self.normalize_text(txt)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 3085, in normalize_text
+    return txt.encode(self.core_fonts_encoding).decode("latin-1")
+AttributeError: 'NoneType' object has no attribute 'encode'
+ERROR:uvicorn.error:Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 81, in receive
+    return self.receive_nowait()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 76, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 41, in call_next
+    message = await recv_stream.receive()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 101, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/protocols/http/h11_impl.py", line 366, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 75, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/applications.py", line 259, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 63, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/main.py", line 78, in add_process_time_header
+    response = await call_next(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 44, in call_next
+    raise app_exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 34, in coro
+    await self.app(scope, request.receive, send_stream.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 656, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 259, in handle
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 61, in app
+    response = await func(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 227, in app
+    raw_response = await run_endpoint_function(
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 162, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/to_thread.py", line 28, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(func, *args, cancellable=cancellable,
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 818, in run_sync_in_worker_thread
+    return await future
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 754, in run
+    result = context.run(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/api/payments.py", line 99, in get_create_pdf
+    pdf.cell(100, 5, doc.customers_a.phone)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 251, in wrapper
+    return fn(self, *args, **kwargs)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 2046, in cell
+    txt = self.normalize_text(txt)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 3085, in normalize_text
+    return txt.encode(self.core_fonts_encoding).decode("latin-1")
+AttributeError: 'NoneType' object has no attribute 'encode'
+ERROR:uvicorn.error:Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 81, in receive
+    return self.receive_nowait()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 76, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 41, in call_next
+    message = await recv_stream.receive()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 101, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/protocols/http/h11_impl.py", line 366, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 75, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/applications.py", line 259, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 63, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/main.py", line 78, in add_process_time_header
+    response = await call_next(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 44, in call_next
+    raise app_exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 34, in coro
+    await self.app(scope, request.receive, send_stream.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 656, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 259, in handle
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 61, in app
+    response = await func(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 227, in app
+    raw_response = await run_endpoint_function(
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 162, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/to_thread.py", line 28, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(func, *args, cancellable=cancellable,
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 818, in run_sync_in_worker_thread
+    return await future
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 754, in run
+    result = context.run(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/api/payments.py", line 99, in get_create_pdf
+    pdf.cell(100, 5, doc.customers_a.phone)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 251, in wrapper
+    return fn(self, *args, **kwargs)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 2046, in cell
+    txt = self.normalize_text(txt)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 3085, in normalize_text
+    return txt.encode(self.core_fonts_encoding).decode("latin-1")
+AttributeError: 'NoneType' object has no attribute 'encode'
+ERROR:uvicorn.error:Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 81, in receive
+    return self.receive_nowait()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 76, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 41, in call_next
+    message = await recv_stream.receive()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 101, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/protocols/http/h11_impl.py", line 366, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 75, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/applications.py", line 259, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 63, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/main.py", line 78, in add_process_time_header
+    response = await call_next(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 44, in call_next
+    raise app_exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 34, in coro
+    await self.app(scope, request.receive, send_stream.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 656, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 259, in handle
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 61, in app
+    response = await func(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 227, in app
+    raw_response = await run_endpoint_function(
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 162, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/to_thread.py", line 28, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(func, *args, cancellable=cancellable,
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 818, in run_sync_in_worker_thread
+    return await future
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 754, in run
+    result = context.run(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/api/payments.py", line 99, in get_create_pdf
+    pdf.cell(100, 5, doc.customers_a.phone)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 251, in wrapper
+    return fn(self, *args, **kwargs)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 2046, in cell
+    txt = self.normalize_text(txt)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 3085, in normalize_text
+    return txt.encode(self.core_fonts_encoding).decode("latin-1")
+AttributeError: 'NoneType' object has no attribute 'encode'
+ERROR:uvicorn.error:Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 81, in receive
+    return self.receive_nowait()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 76, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 41, in call_next
+    message = await recv_stream.receive()
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/streams/memory.py", line 101, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/protocols/http/h11_impl.py", line 366, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 75, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/applications.py", line 259, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 63, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/main.py", line 78, in add_process_time_header
+    response = await call_next(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 44, in call_next
+    raise app_exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/base.py", line 34, in coro
+    await self.app(scope, request.receive, send_stream.send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 656, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 259, in handle
+    await self.app(scope, receive, send)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/routing.py", line 61, in app
+    response = await func(request)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 227, in app
+    raw_response = await run_endpoint_function(
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fastapi/routing.py", line 162, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/starlette/concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/to_thread.py", line 28, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(func, *args, cancellable=cancellable,
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 818, in run_sync_in_worker_thread
+    return await future
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/anyio/_backends/_asyncio.py", line 754, in run
+    result = context.run(func, *args)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/api/payments.py", line 99, in get_create_pdf
+    pdf.cell(100, 5, doc.customers_a.phone)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 251, in wrapper
+    return fn(self, *args, **kwargs)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 2046, in cell
+    txt = self.normalize_text(txt)
+  File "/home/fww1/PycharmProjects/pythonProject/clinic45/venv/lib/python3.8/site-packages/fpdf/fpdf.py", line 3085, in normalize_text
+    return txt.encode(self.core_fonts_encoding).decode("latin-1")
+AttributeError: 'NoneType' object has no attribute 'encode'
 DEBUG:fastapi:Start
 DEBUG:fastapi:Start
 DEBUG:fastapi:Start

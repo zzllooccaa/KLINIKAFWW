@@ -16,6 +16,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from dataclasses import dataclass
 
 DATABASE_URL = "postgresql://postgres:myPassword@localhost:5432/Clinic22"
+#DATABASE_URL = "postgresql://postgres:myPassword@localhost:5430/Clinic22"
 
 engine = create_engine(
     DATABASE_URL, json_serializer=lambda obj: simplejson.dumps(obj)
